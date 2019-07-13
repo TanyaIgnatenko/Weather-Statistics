@@ -3,6 +3,4 @@ function Point(x, y) {
   this.y = y;
 }
 
-export {
-  Point
-};
+export { Point };

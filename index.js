@@ -1,6 +1,5 @@
-import { average, absoluteValueToNormalized } from 'helpers/math.js';
-import { Chart } from './chart';
-import { Point } from './point';
+import { Chart } from './chart.js';
+import { Point } from './point.js';
 
 'use strict';
 

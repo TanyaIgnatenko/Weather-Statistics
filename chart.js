@@ -1,4 +1,5 @@
-import { absoluteValueToNormalized, average } from './helpers/math';
+import { absoluteValueToNormalized, average } from './helpers/math.js';
+import { Point } from './point.js';
 
 class Chart {
   toChartPoint(point) {
@@ -47,6 +48,4 @@ class Chart {
   }
 }
 
-export {
-  Chart
-};
+export { Chart };
