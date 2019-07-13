@@ -1,0 +1,29 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    width: 900px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+
+    background: lavender;
+    font-family: "Open Sans", sans-serif;
+}
+
+.period {
+    display: flex;
+    align-items: center;
+}
+
+.start-date {
+    margin-right: 5px;
+}
