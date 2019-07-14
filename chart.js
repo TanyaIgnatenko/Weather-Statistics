@@ -10,7 +10,7 @@ class Chart {
   toChartPoint(point) {
     return {
       x: Math.round(absoluteValueToNormalized(point.x, this.rangeX.min, this.rangeX.max) * this.chartWidth),
-      y: Math.round(absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max) * this.chartHeight),
+      y: Math.round((1 - absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max)) * this.chartHeight),
     };
   }
 
