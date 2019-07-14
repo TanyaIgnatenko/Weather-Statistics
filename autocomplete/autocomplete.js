@@ -1,9 +1,10 @@
 import { removeAllChilds } from '../helpers/dom.js';
 import { onClickOutside } from '../helpers/onClickOutside.js';
+import { getUniqueId } from '../helpers/uniqueId.js';
 
 function autocomplete(input, options) {
   const inputContainer = input.parentNode;
-  const inputContainerId = 'autocomplete-container';
+  const inputContainerId = 'input-container-' + getUniqueId();
   inputContainer.id = inputContainerId;
   onClickOutside(inputContainerId, hideAutocompleteList);
 
