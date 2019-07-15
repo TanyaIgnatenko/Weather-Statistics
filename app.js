@@ -24,17 +24,9 @@ class App {
     this.startDateInput = startDateInput;
     this.endDateInput = endDateInput;
 
-    this.dbWorker = new Worker('database/db-worker.js');
-    this.chartWorker = new Worker('chart/chart-worker.js');
-
-    this.dbWorker.onmessage = this.prepareDataForChart;
-    this.chartWorker.onmessage = this.drawChart;
+    this.worker = new Worker('worker/worker.js');
+    this.worker.onmessage = this.drawChart;
   }
-
-  prepareDataForChart = event => {
-    const { period } = this.state;
-    this.chartWorker.postMessage({data: event.data, groupsCount: 12});
-  };
 
   initPeriodInputs() {
     const { period } = this.state;
@@ -65,7 +57,7 @@ class App {
 
   updateUI() {
     const { chartType, period } = this.state;
-    this.dbWorker.postMessage({dataKey: chartType, dateRange: period});
+    this.worker.postMessage({dataKey: chartType, dateRange: period, groupsCount: 12});
   }
 
   drawChart = (event) => {

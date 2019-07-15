@@ -133,7 +133,7 @@ class Chart {
       max: points.reduce((max, point) => Math.max(max, point.y), -Infinity)
     };
 
-    return points.map(this.fromAbsoluteValuesToCanvasPoint(rangeX, rangeY));
+    return points.map(point => this.fromAbsoluteValuesToCanvasPoint(point, rangeX, rangeY));
   }
 
   fromAbsoluteValuesToCanvasPoint = (point, rangeX, rangeY) => {

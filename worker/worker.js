@@ -1,30 +1,28 @@
-importScripts('../helpers/math.js', '../helpers/binaryFindIndex.js');
+importScripts('../database/indexedDbManager.js', '../helpers/math.js', '../helpers/binaryFindIndex.js');
 
-onmessage = function (message) {
-  let { data, groupsCount } = message.data;
+onmessage = async function (message) {
+  const { dataKey, dateRange, groupsCount } = message.data;
 
+  const  monthRange = {
+    min: `${dateRange.start}-01`,
+    max: `${dateRange.end}-01`,
+  };
+  const dbManager = new IndexedDbManager();
+  const data = await dbManager.retrieveData(dataKey, monthRange);
+
+  const averageData = getGroupsAverage(data, groupsCount);
+
+  postMessage(averageData);
+};
+
+function getGroupsAverage(data, groupsCount) {
   groupsCount = groupsCount <= data.length
     ? groupsCount
     : data.length;
 
   const groups = divideIntoGroups(data, groupsCount);
-  
-  const averageData = calculateGroupAverage(groups);
-  
-  postMessage(averageData);
-};
 
-function filterData(data, startDate, endDate) {
-  const startIdx = binaryFindIndex(data, data => {
-    const [ year ] = data.t.split('-');
-    return year >= startDate;
-  });
-  const endIdx = binaryFindIndex(data, data => {
-    const [ year ] = data.t.split('-');
-    return year > endDate;
-  }) || data.length;
-
-  return data.slice(startIdx, endIdx);
+  return calculateGroupAverage(groups);
 }
 
 function calculateGroupAverage(groups) {
