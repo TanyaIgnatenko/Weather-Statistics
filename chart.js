@@ -7,12 +7,12 @@ class Chart {
     this.chartHeight = canvas.height;
   }
 
-  toChartPoint(point) {
+  toChartPoint = point => {
     return {
       x: Math.round(absoluteValueToNormalized(point.x, this.rangeX.min, this.rangeX.max) * this.chartWidth),
       y: Math.round((1 - absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max)) * this.chartHeight),
     };
-  }
+  };
 
   clear() {
     this.context.clearRect(0, 0, this.chartWidth, this.chartHeight);
@@ -28,27 +28,14 @@ class Chart {
       max: points.reduce((max, point) => Math.max(max, point.y), -Infinity)
     };
 
-    const chartValues = points.reduce((chartValues, point) => {
-      const chartPoint = this.toChartPoint(point);
-
-      chartValues[chartPoint.x] = chartValues[chartPoint.x]
-        ? chartValues[chartPoint.x].concat(chartPoint.y)
-        : [chartPoint.y];
-
-      return chartValues;
-    }, {});
-
-    const averageChartValues = Object.keys(chartValues).reduce((averageValues, valueX) => {
-      averageValues[valueX] = average(chartValues[valueX]);
-      return averageValues;
-    }, {});
+    const chartPoints = points.map(this.toChartPoint);
 
     this.context.strokeStyle = color;
 
     this.context.beginPath();
-    for (const chartX in averageChartValues) {
-      this.context.lineTo(Number(chartX), averageChartValues[chartX]);
-    }
+    chartPoints.forEach(point => {
+      this.context.lineTo(point.x, point.y);
+    });
     this.context.stroke();
   }
 }
