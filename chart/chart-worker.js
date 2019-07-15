@@ -1,15 +1,13 @@
-importScripts('./helpers/math.js', './helpers/binaryFindIndex.js');
+importScripts('../helpers/math.js', '../helpers/binaryFindIndex.js');
 
-onmessage = function (event) {
-  let { data, period, groupsCount } = event.data;
+onmessage = function (message) {
+  let { data, groupsCount } = message.data;
 
-  const filteredData = filterData(data, period.start, period.end);
-  
   groupsCount = groupsCount <= data.length
     ? groupsCount
     : data.length;
 
-  const groups = divideIntoGroups(filteredData, groupsCount);
+  const groups = divideIntoGroups(data, groupsCount);
   
   const averageData = calculateGroupAverage(groups);
   
