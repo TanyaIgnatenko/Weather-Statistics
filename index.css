@@ -24,6 +24,10 @@
     align-items: center;
 }
 
+.start-date, .end-date {
+    width: 72px;
+}
+
 .start-date {
     margin-right: 5px;
 }
