@@ -1,3 +1,5 @@
+importScripts('./helpers/math.js', './helpers/binaryFindIndex.js');
+
 onmessage = function (event) {
   let { data, period, groupsCount } = event.data;
 
@@ -55,31 +57,4 @@ function divideIntoGroups(data, groupsCount) {
   }
 
   return groups;
-}
-
-// instead of imports
-
-function sum(values) {
-  return values.reduce((sum, value) => sum + value);
-}
-
-function average(values) {
-  return sum(values) / values.length;
-}
-
-function binaryFindIndex(array, predicate) {
-  let leftIdx = 0,
-    rightIdx = array.length - 1;
-
-  while (leftIdx <= rightIdx) {
-    const middleIdx = Math.floor((leftIdx + rightIdx) / 2);
-
-    if (predicate(array[middleIdx])) {
-      rightIdx = middleIdx - 1;
-    } else {
-      leftIdx = middleIdx + 1;
-    }
-  }
-
-  return leftIdx !== array.length ? leftIdx : null;
 }

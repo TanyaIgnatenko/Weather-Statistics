@@ -14,5 +14,3 @@ function binaryFindIndex(array, predicate) {
 
   return leftIdx !== array.length ? leftIdx : null;
 }
-
-export { binaryFindIndex };

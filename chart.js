@@ -1,4 +1,6 @@
-import { absoluteValueToNormalized, average } from './helpers/math.js';
+function absoluteValueToNormalized(value, min, max) {
+  return (value - min) / (max - min);
+}
 
 class Chart {
   constructor(canvas) {
