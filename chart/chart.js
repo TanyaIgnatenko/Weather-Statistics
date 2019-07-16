@@ -87,7 +87,7 @@ class Chart {
   drawTooltipFor(point) {
     this.drawTooltipLine(point.x);
 
-    const normalizedValue = point.y / this.canvasHeight;
+    const normalizedValue = 1- point.y / this.canvasHeight;
     const absoluteValue = normalizedValueToAbsolute(normalizedValue, this.rangeY.min, this.rangeY.max);
     const tooltipText = `Значение ${absoluteValue.toFixed(1)}`;
     this.drawTooltip(point.x, tooltipText);
