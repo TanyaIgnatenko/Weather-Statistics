@@ -12,6 +12,7 @@ const CHART_MARGIN_TOP = 100;
 const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
 const TOOLTIP_TOP = 30;
+const CHART_OFFSET_X = 10;
 
 class Chart {
   state = {
@@ -27,6 +28,14 @@ class Chart {
     this.canvasTop = canvasRect.top;
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height - CHART_MARGIN_TOP;
+
+    this.chartWidth = this.canvasWidth - 2 * CHART_OFFSET_X;
+    this.chartHeight = this.canvasHeight;
+
+    this.tooltipCenterXLimit = {
+      left: TOOLTIP_WIDTH / 2 + CHART_OFFSET_X,
+      right: this.canvasWidth - TOOLTIP_WIDTH / 2 - CHART_OFFSET_X,
+    };
 
     this.canvas.onmousemove = this.showPlaceholder;
   }
@@ -87,7 +96,7 @@ class Chart {
   drawTooltipFor(point) {
     this.drawTooltipLine(point.x);
 
-    const normalizedValue = 1- point.y / this.canvasHeight;
+    const normalizedValue = 1 - point.y / this.canvasHeight;
     const absoluteValue = normalizedValueToAbsolute(normalizedValue, this.rangeY.min, this.rangeY.max);
     const tooltipText = `Значение ${absoluteValue.toFixed(1)}`;
     this.drawTooltip(point.x, tooltipText);
@@ -102,6 +111,14 @@ class Chart {
   }
 
   drawTooltip(centerX, text) {
+    centerX = centerX < this.tooltipCenterXLimit.left
+      ? this.tooltipCenterXLimit.left
+      : centerX;
+
+    centerX = centerX > this.tooltipCenterXLimit.right
+      ? this.tooltipCenterXLimit.right
+      : centerX;
+
     const tooltipLeft = centerX - TOOLTIP_WIDTH / 2;
     const tooltipTop = TOOLTIP_TOP;
 
@@ -139,9 +156,9 @@ class Chart {
 
   fromAbsoluteValuesToCanvasPoint = (point) => {
     return {
-      x: Math.round(absoluteValueToNormalized(point.x, this.rangeX.min, this.rangeX.max) * this.canvasWidth),
+      x: CHART_OFFSET_X + Math.round(absoluteValueToNormalized(point.x, this.rangeX.min, this.rangeX.max) * this.chartWidth),
       y: CHART_MARGIN_TOP
-        + Math.round((1 - absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max)) * this.canvasHeight),
+        + Math.round((1 - absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max)) * this.chartHeight),
     };
   };
 
