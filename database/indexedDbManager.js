@@ -1,3 +1,8 @@
+const VERSION_FACTOR = {
+  temperature: 2,
+  percipitation: 3,
+};
+
 class IndexedDbManager {
   openDb() {
     const openRequest = indexedDB.open('weather-statistics');
@@ -58,17 +63,14 @@ class IndexedDbManager {
 
     IndexedDbManager.fillStoreWith(store, data);
 
-    return db;
+    db.close();
+    const versionChangeRequest = indexedDB.open('weather-statistics', Number(db.version * VERSION_FACTOR[dataKey]));
+
+    return toPromise(versionChangeRequest);
   }
 
   static isDataPresent(version, dataKey) {
-    switch (dataKey) {
-      case 'temperature':
-        return version && (version % 2 === 0);
-      case '​precipitation':
-        return version && (version % 3 === 0);
-    }
-    console.error('Invalid version');
+    return version % VERSION_FACTOR[dataKey] === 0;
   }
 
   static fillStoreWith(store, data) {
