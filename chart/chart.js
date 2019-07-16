@@ -106,6 +106,7 @@ class Chart {
     const tooltipTop = TOOLTIP_TOP;
 
     this.context.rect(tooltipLeft, tooltipTop, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
+    this.context.strokeStyle = 'gray';
     this.context.stroke();
     this.context.fillStyle = 'white';
     this.context.fill();
@@ -124,23 +125,23 @@ class Chart {
   }
 
   toCanvasPoints(points) {
-    const rangeX = {
+    this.rangeX = {
       min: points[0].x,
       max: points[points.length - 1].x
     };
-    const rangeY = {
+    this.rangeY = {
       min: points.reduce((min, point) => Math.min(min, point.y), Infinity),
       max: points.reduce((max, point) => Math.max(max, point.y), -Infinity)
     };
 
-    return points.map(point => this.fromAbsoluteValuesToCanvasPoint(point, rangeX, rangeY));
+    return points.map(this.fromAbsoluteValuesToCanvasPoint);
   }
 
-  fromAbsoluteValuesToCanvasPoint = (point, rangeX, rangeY) => {
+  fromAbsoluteValuesToCanvasPoint = (point) => {
     return {
-      x: Math.round(absoluteValueToNormalized(point.x, rangeX.min, rangeX.max) * this.canvasWidth),
+      x: Math.round(absoluteValueToNormalized(point.x, this.rangeX.min, this.rangeX.max) * this.canvasWidth),
       y: CHART_MARGIN_TOP
-        + Math.round((1 - absoluteValueToNormalized(point.y, rangeY.min, rangeY.max)) * this.canvasHeight),
+        + Math.round((1 - absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max)) * this.canvasHeight),
     };
   };
 
