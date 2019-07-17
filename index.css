@@ -37,21 +37,42 @@ body {
 }
 
 .temperature-input, .precipitation-input {
-    display: none;
+    opacity: 0;
 }
 
-.data-type-input {
-    padding: 8px;
+.temperature-input + span, .precipitation-input + span {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+
     background: rgba(253, 253, 253, 0.53);
+}
+
+.temperature-input + span {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.precipitation-input + span {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.temperature-input:checked + span, .precipitation-input:checked + span {
+    background: white;
+    z-index: -1;
+}
+
+.data-type-label {
+    position: relative;
+    padding: 8px;
     line-height: 2;
     opacity: 0.7;
     cursor: pointer;
-    transition: all 0.2s;
-}
-
-.data-type-input > input:checked {
-    background: rgb(255, 255, 255);
-    opacity: 1;
 }
 
 .period {
