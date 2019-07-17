@@ -1,8 +1,6 @@
 import { makeDraggable } from '../helpers/draggable.js';
 import { clamp } from '../helpers/clamp.js';
 
-const NORMALIZED_MIN_HANDLES_DIST = 0.03;
-
 class RangeSlider {
   state = {
     selectedRange: {
@@ -98,7 +96,7 @@ class RangeSlider {
     const clampedValue = clamp(
       normalizedValue,
       0,
-      normalizedEndHandleValue - NORMALIZED_MIN_HANDLES_DIST,
+      normalizedEndHandleValue,
     );
 
     const { selectedRange } = this.state;
@@ -117,7 +115,7 @@ class RangeSlider {
 
     const clampedValue = clamp(
       normalizedValue,
-      normalizedStartHandleValue + NORMALIZED_MIN_HANDLES_DIST,
+      normalizedStartHandleValue,
       1,
     );
 

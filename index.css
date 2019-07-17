@@ -88,7 +88,10 @@ body {
     position: absolute;
     width: 16px;
     background: #C0D1E1;
-    transform: translateX(-50%);
+}
+
+.slider-handle.left {
+    transform: translateX(-100%);
 }
 
 .slider-handle:before {
@@ -117,7 +120,6 @@ body {
     position: absolute;
     width: 900px;
     border: 2px solid #C0D1E1;
-    border-radius: 8px;
 }
 
 .slider-wireframe {
