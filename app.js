@@ -5,7 +5,7 @@ import { range } from './helpers/range.js';
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
 
-const CHART_TYPE = {
+const DATA_TYPE = {
   TEMPERATURE: 'temperature',
   PRECIPITATION: 'precipitation',
 };
@@ -17,31 +17,26 @@ const PURPOSE = {
 
 class App {
   state = {
-    chartType: CHART_TYPE.TEMPERATURE,
+    selectedDataType: DATA_TYPE.TEMPERATURE,
     selectedPeriod: {
       start: MIN_DATE,
       end: MAX_DATE,
     },
   };
 
-  constructor(canvas, periodInputs, slider) {
+  constructor(canvas, dataTypeInputs, periodSelects, slider) {
     this.canvas = canvas;
-    this.startDateSelect = periodInputs.start;
-    this.endDateSelect = periodInputs.end;
+    this.startDateSelect = periodSelects.start;
+    this.endDateSelect = periodSelects.end;
 
-    const { selectedPeriod } = this.state;
-    this.slider = new RangeSlider({
-      domElements: slider,
-      min: MIN_DATE,
-      max: MAX_DATE,
-      selectedRange: { ...selectedPeriod },
-      valuePerStep: 1,
-      onChange: this.handleRangeSliderChange,
-    });
+    this.initPeriodInputs();
+    this.initDataTypeInputs(dataTypeInputs);
+    this.initRangeSlider(slider);
+    this.initChart();
+    this.initWorker();
+  }
 
-    this.chart = new Chart(this.canvas);
-    this.sliderWireframeChart = new Chart(slider.wireframe);
-
+  initWorker() {
     this.worker = new Worker('worker/worker.js');
     this.worker.onmessage = message => {
       const { data, purpose } = message.data;
@@ -60,6 +55,40 @@ class App {
         }
       }
     };
+  }
+
+  initChart() {
+    this.chart = new Chart(this.canvas);
+  }
+
+  initRangeSlider(slider) {
+    const { selectedPeriod } = this.state;
+    this.slider = new RangeSlider({
+      domElements: slider,
+      min: MIN_DATE,
+      max: MAX_DATE,
+      selectedRange: selectedPeriod,
+      valuePerStep: 1,
+      onChange: this.handleRangeSliderChange,
+    });
+
+    this.sliderWireframeChart = new Chart(slider.wireframe);
+  }
+
+  initDataTypeInputs(dataTypeInputs) {
+    const { selectedDataType } = this.state;
+
+    dataTypeInputs.temperature.checked =
+      selectedDataType === DATA_TYPE.TEMPERATURE;
+    dataTypeInputs.precipitation.checked =
+      selectedDataType === DATA_TYPE.PRECIPITATION;
+
+    dataTypeInputs.temperature.addEventListener('click', () =>
+      this.switchDataType(DATA_TYPE.TEMPERATURE),
+    );
+    dataTypeInputs.precipitation.addEventListener('click', () =>
+      this.switchDataType(DATA_TYPE.PRECIPITATION),
+    );
   }
 
   initPeriodInputs() {
@@ -89,37 +118,48 @@ class App {
     this.endDateSelect.addEventListener('change', e =>
       this.handlePeriodChange('end', e.target.value),
     );
-
-    const { chartType } = this.state;
-    this.worker.postMessage({
-      dataKey: chartType,
-      dateRange: selectedPeriod,
-      groupsCount: 165,
-      purpose: PURPOSE.SLIDER,
-    });
   }
+
+  switchDataType = dataType => {
+    this.state.selectedDataType = dataType;
+    this.updateChart();
+    this.updateSliderWireframe();
+  };
 
   handlePeriodChange = (name, value) => {
     const { selectedPeriod } = this.state;
     selectedPeriod[name] = value;
     this.slider.setSelectedRange(selectedPeriod.start, selectedPeriod.end);
-    this.updateUI();
+    this.updateChart();
   };
 
   handleRangeSliderChange = newRange => {
     this.state.selectedPeriod = newRange;
     this.startDateSelect.value = this.state.selectedPeriod.start;
     this.endDateSelect.value = this.state.selectedPeriod.end;
-    this.updateUI();
+    this.updateChart();
   };
 
-  updateUI() {
-    const { chartType, selectedPeriod } = this.state;
+  updateChart() {
+    const { selectedDataType, selectedPeriod } = this.state;
     this.worker.postMessage({
-      dataKey: chartType,
+      dataKey: selectedDataType,
       dateRange: selectedPeriod,
       groupsCount: 12,
       purpose: PURPOSE.CHART,
+    });
+  }
+
+  updateSliderWireframe() {
+    const { selectedDataType } = this.state;
+    this.worker.postMessage({
+      dataKey: selectedDataType,
+      dateRange: {
+        start: MIN_DATE,
+        end: MAX_DATE,
+      },
+      groupsCount: 165,
+      purpose: PURPOSE.SLIDER,
     });
   }
 
@@ -134,8 +174,8 @@ class App {
   };
 
   async run() {
-    this.initPeriodInputs();
-    this.updateUI();
+    this.updateChart();
+    this.updateSliderWireframe();
   }
 }
 

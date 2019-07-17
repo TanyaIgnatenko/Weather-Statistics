@@ -1,6 +1,6 @@
 const VERSION_FACTOR = {
   temperature: 2,
-  percipitation: 3,
+  precipitation: 3,
 };
 
 class IndexedDbManager {

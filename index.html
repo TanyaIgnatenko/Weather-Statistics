@@ -4,12 +4,21 @@
 <meta charset="UTF-8">
 <title>Weather statistics</title>
 <link rel="stylesheet" type="text/css" href="index.css">
-<link rel="stylesheet" type="text/css" href="autocomplete/autocomplete.css">
 </head>
 <body>
 <div class="chart-container">
     <div class="chart-header">
         <h1 class="chart-title">Статистика</h1>
+        <div class="data-type-inputs-container">
+            <label class="data-type-input">
+                Температура
+                <input class="temperature-input" type="radio" name="data-type" value="temperature">
+            </label>
+            <label class="data-type-input">
+                Осадки
+                <input class="precipitation-input" type="radio" name="data-type" value="precipitation">
+            </label>
+        </div>
         <div class="period">
             <select name="start" class="start-date">
                 <option disabled selected>Начало</option>
@@ -19,7 +28,7 @@
             </select>
         </div>
     </div>
-    <canvas id="chart" width="800" height="465"></canvas>
+    <canvas id="chart" width="800" height="430"></canvas>
     <div class='slider-container'>
         <canvas class="slider-wireframe"></canvas>
         <div class="mask left"></div>

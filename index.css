@@ -22,6 +22,7 @@ body {
 
 .chart-title {
     color: #414141;
+    font-size: 20px;
 }
 
 .chart-header {
@@ -35,13 +36,33 @@ body {
     font-family: "Open Sans", sans-serif;
 }
 
+.temperature-input, .precipitation-input {
+    display: none;
+}
+
+.data-type-input {
+    padding: 8px;
+    background: rgba(253, 253, 253, 0.53);
+    line-height: 2;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.data-type-input > input:checked {
+    background: rgb(255, 255, 255);
+    opacity: 1;
+}
+
 .period {
     display: flex;
     align-items: center;
 }
 
 .start-date, .end-date {
-    width: 72px;
+    width: 100px;
+    height: 30px;
+    border-radius: 2px;
 }
 
 .start-date {
@@ -51,7 +72,7 @@ body {
 .slider-container {
     position: relative;
     display: flex;
-    margin-top: 5px;
+    margin-top: 20px;
 }
 
 .slider-handle, .mask, .slider-wireframe {
