@@ -11,12 +11,12 @@
     <div class="chart-header">
         <h1 class="chart-title">Статистика</h1>
         <div class="period">
-            <div class="input-container">
-                <input name="start" class="start-date" type="number" placeholder="Начало"/>
-            </div>
-            <div class="input-container">
-                <input name="end" class="end-date" type="number" placeholder="Конец"/>
-            </div>
+            <select name="start" class="start-date">
+                <option disabled selected>Начало</option>
+            </select>
+            <select name="end" id="end" class="end-date">
+                <option disabled selected>Конец</option>
+            </select>
         </div>
     </div>
     <canvas id="chart" width="800" height="465"></canvas>

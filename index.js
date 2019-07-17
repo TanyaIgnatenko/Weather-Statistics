@@ -1,7 +1,7 @@
 import { App } from './app.js';
 
 const canvas = document.getElementById('chart');
-const periodInputs = {
+const periodSelects = {
   start: document.getElementsByClassName('start-date')[0],
   end: document.getElementsByClassName('end-date')[0],
 };
@@ -15,5 +15,5 @@ const slider = {
   rightMask: document.getElementsByClassName('mask')[1],
 };
 
-const app = new App(canvas, periodInputs, slider);
+const app = new App(canvas, periodSelects, slider);
 app.run();

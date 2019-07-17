@@ -1,7 +1,6 @@
 import { Chart } from './chart/chart.js';
 import { RangeSlider } from './range-slider/RangeSlider.js';
 import { range } from './helpers/range.js';
-import { autocomplete } from './autocomplete/autocomplete.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -27,19 +26,18 @@ class App {
 
   constructor(canvas, periodInputs, slider) {
     this.canvas = canvas;
-    this.startDateInput = periodInputs.start;
-    this.endDateInput = periodInputs.end;
+    this.startDateSelect = periodInputs.start;
+    this.endDateSelect = periodInputs.end;
 
     const { selectedPeriod } = this.state;
     this.slider = new RangeSlider({
-        domElements: slider,
-        min: MIN_DATE,
-        max: MAX_DATE,
-        selectedRange: {...selectedPeriod},
-        valuePerStep: 1,
-        onChange: this.handleRangeSliderChange,
-      },
-    );
+      domElements: slider,
+      min: MIN_DATE,
+      max: MAX_DATE,
+      selectedRange: { ...selectedPeriod },
+      valuePerStep: 1,
+      onChange: this.handleRangeSliderChange,
+    });
 
     this.chart = new Chart(this.canvas);
     this.sliderWireframeChart = new Chart(slider.wireframe);
@@ -66,22 +64,29 @@ class App {
 
   initPeriodInputs() {
     const { selectedPeriod } = this.state;
-    this.startDateInput.value = selectedPeriod.start;
-    this.endDateInput.value = selectedPeriod.end;
+    const possibleStartDates = range(MIN_DATE, MAX_DATE - 4);
+    const possibleEndDates = range(MIN_DATE + 4, MAX_DATE);
 
-    this.startDateInput.min = MIN_DATE;
-    this.startDateInput.max = MAX_DATE;
-    this.endDateInput.min = MIN_DATE;
-    this.endDateInput.max = MAX_DATE;
+    possibleStartDates.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      option.selected = year === selectedPeriod.start;
+      this.startDateSelect.appendChild(option);
+    });
 
-    const possibleDates = range(1881, 2006).map(String);
-    autocomplete(this.startDateInput, possibleDates);
-    autocomplete(this.endDateInput, possibleDates);
+    possibleEndDates.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      option.selected = year === selectedPeriod.end;
+      this.endDateSelect.appendChild(option);
+    });
 
-    this.startDateInput.addEventListener('change', e =>
+    this.startDateSelect.addEventListener('change', e =>
       this.handlePeriodChange('start', e.target.value),
     );
-    this.endDateInput.addEventListener('change', e =>
+    this.endDateSelect.addEventListener('change', e =>
       this.handlePeriodChange('end', e.target.value),
     );
 
@@ -103,8 +108,8 @@ class App {
 
   handleRangeSliderChange = newRange => {
     this.state.selectedPeriod = newRange;
-    this.startDateInput.value = this.state.selectedPeriod.start;
-    this.endDateInput.value = this.state.selectedPeriod.end;
+    this.startDateSelect.value = this.state.selectedPeriod.start;
+    this.endDateSelect.value = this.state.selectedPeriod.end;
     this.updateUI();
   };
 
