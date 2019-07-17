@@ -2,6 +2,7 @@ import { Chart } from './chart/chart.js';
 import { RangeSlider } from './range-slider/RangeSlider.js';
 import { range } from './helpers/range.js';
 import { throttle } from './helpers/throttle.js';
+import { removeAllChilds } from './helpers/dom.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -27,14 +28,17 @@ class App {
   };
 
   constructor(chartCanvas, dataTypeInputs, periodSelects, slider) {
-    this.initPeriodInputs(periodSelects);
+    this.initPeriodSelects(periodSelects);
     this.initDataTypeInputs(dataTypeInputs);
     this.initRangeSlider(slider);
     this.initChart(chartCanvas);
     this.initWorker();
 
     this.updateChart = throttle(this.updateChart, 100);
-    this.updateSliderChartPreview = throttle(this.updateSliderChartPreview, 100);
+    this.updateSliderChartPreview = throttle(
+      this.updateSliderChartPreview,
+      100,
+    );
   }
 
   initWorker() {
@@ -48,7 +52,7 @@ class App {
           break;
         }
         case PURPOSE.SLIDER: {
-          this.fillSliderWireframe(data);
+          this.drawSliderPreviewChart(data);
           break;
         }
         default: {
@@ -93,37 +97,50 @@ class App {
     );
   }
 
-  initPeriodInputs(periodSelects) {
-    const { selectedPeriod } = this.state;
-
+  initPeriodSelects(periodSelects) {
     this.startDateSelect = periodSelects.start;
     this.endDateSelect = periodSelects.end;
 
-    const possibleStartDates = range(MIN_DATE, MAX_DATE);
-    const possibleEndDates = range(MIN_DATE, MAX_DATE);
+    this.initPeriodSelect(this.startDateSelect, 'start');
+    this.initPeriodSelect(this.endDateSelect, 'end');
+  }
 
-    possibleStartDates.forEach(year => {
+  initPeriodSelect(select, selectName) {
+    this.updatePeriodSelectOptions(selectName);
+
+    select.addEventListener('change', e =>
+      this.handlePeriodSelectChange(selectName, e.target.value),
+    );
+  }
+
+  updatePeriodSelectOptions(selectName) {
+    const select = this.getPeriodSelectByName(selectName);
+
+    removeAllChilds(select);
+
+    const { selectedPeriod } = this.state;
+
+    const minDate = selectName === 'end'
+      ? selectedPeriod.start
+      : MIN_DATE;
+    const maxDate = selectName === 'start'
+      ? selectedPeriod.end
+      : MAX_DATE;
+
+    const possibleDates = range(minDate, maxDate);
+    possibleDates.forEach(year => {
       const option = document.createElement('option');
       option.value = year;
       option.textContent = year;
-      option.selected = year === selectedPeriod.start;
-      this.startDateSelect.appendChild(option);
+      option.selected = year === selectedPeriod[selectName];
+      select.appendChild(option);
     });
+  }
 
-    possibleEndDates.forEach(year => {
-      const option = document.createElement('option');
-      option.value = year;
-      option.textContent = year;
-      option.selected = year === selectedPeriod.end;
-      this.endDateSelect.appendChild(option);
-    });
-
-    this.startDateSelect.addEventListener('change', e =>
-      this.handlePeriodChange('start', e.target.value),
-    );
-    this.endDateSelect.addEventListener('change', e =>
-      this.handlePeriodChange('end', e.target.value),
-    );
+  getPeriodSelectByName(name) {
+    return name === 'start'
+      ? this.startDateSelect
+      : this.endDateSelect;
   }
 
   switchDataType = dataType => {
@@ -133,9 +150,12 @@ class App {
     this.updateSliderChartPreview();
   };
 
-  handlePeriodChange = (name, value) => {
+  handlePeriodSelectChange = (name, value) => {
     const { selectedPeriod } = this.state;
-    selectedPeriod[name] = value;
+    selectedPeriod[name] = +value;
+
+    const otherPeriodSelectName = name === 'start' ? 'end' : 'start';
+    this.updatePeriodSelectOptions(otherPeriodSelectName);
 
     this.slider.setSelectedRange(selectedPeriod.start, selectedPeriod.end);
 
@@ -147,6 +167,9 @@ class App {
 
     this.startDateSelect.value = this.state.selectedPeriod.start;
     this.endDateSelect.value = this.state.selectedPeriod.end;
+
+    this.updatePeriodSelectOptions('start');
+    this.updatePeriodSelectOptions('end');
 
     this.updateChart();
   };
@@ -179,7 +202,7 @@ class App {
     this.chart.draw(data);
   };
 
-  fillSliderWireframe = data => {
+  drawSliderPreviewChart = data => {
     this.sliderPreviewChart.clear();
     this.sliderPreviewChart.draw(data);
   };
