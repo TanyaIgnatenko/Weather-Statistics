@@ -1,6 +1,6 @@
 import { App } from './app.js';
 
-const canvas = document.getElementById('chart');
+const chartCanvas = document.getElementById('chart');
 const dataTypeInputs = {
   temperature: document.getElementsByClassName('temperature-input')[0],
   precipitation: document.getElementsByClassName('precipitation-input')[0],
@@ -14,10 +14,10 @@ const slider = {
   leftHandle:  document.getElementsByClassName('slider-handle')[0],
   rightHandle:  document.getElementsByClassName('slider-handle')[1],
   selectedRange: document.getElementsByClassName('selected-range')[0],
-  wireframe: document.getElementsByClassName('slider-wireframe')[0],
+  canvas: document.getElementsByClassName('slider-canvas')[0],
   leftMask: document.getElementsByClassName('mask')[0],
   rightMask: document.getElementsByClassName('mask')[1],
 };
 
-const app = new App(canvas, dataTypeInputs, periodSelects, slider);
+const app = new App(chartCanvas, dataTypeInputs, periodSelects, slider);
 app.run();

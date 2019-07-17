@@ -8,7 +8,7 @@ function normalizedValueToAbsolute(normalizedValue, min, max) {
   return normalizedValue * (max - min) + min;
 }
 
-const CHART_MARGIN_TOP = 100;
+const CHART_MARGIN_TOP = 0;
 const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
 const TOOLTIP_TOP = 30;

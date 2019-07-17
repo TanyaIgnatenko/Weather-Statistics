@@ -1,18 +1,20 @@
 import { Chart } from './chart/chart.js';
 import { RangeSlider } from './range-slider/RangeSlider.js';
 import { range } from './helpers/range.js';
+import { throttle } from './helpers/throttle.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
 
+// this Enum doesn't use Symbol because it will be used as key at IndexedDb while Symbol is not serializable
 const DATA_TYPE = {
   TEMPERATURE: 'temperature',
   PRECIPITATION: 'precipitation',
 };
 
 const PURPOSE = {
-  SLIDER: 'SLIDER',
-  CHART: 'CHART',
+  SLIDER: 'slider',
+  CHART: 'chart',
 };
 
 class App {
@@ -24,16 +26,15 @@ class App {
     },
   };
 
-  constructor(canvas, dataTypeInputs, periodSelects, slider) {
-    this.canvas = canvas;
-    this.startDateSelect = periodSelects.start;
-    this.endDateSelect = periodSelects.end;
-
-    this.initPeriodInputs();
+  constructor(chartCanvas, dataTypeInputs, periodSelects, slider) {
+    this.initPeriodInputs(periodSelects);
     this.initDataTypeInputs(dataTypeInputs);
     this.initRangeSlider(slider);
-    this.initChart();
+    this.initChart(chartCanvas);
     this.initWorker();
+
+    this.updateChart = throttle(this.updateChart, 100);
+    this.updateSliderChartPreview = throttle(this.updateSliderChartPreview, 100);
   }
 
   initWorker() {
@@ -57,12 +58,13 @@ class App {
     };
   }
 
-  initChart() {
-    this.chart = new Chart(this.canvas);
+  initChart(chartCanvas) {
+    this.chart = new Chart(chartCanvas);
   }
 
   initRangeSlider(slider) {
     const { selectedPeriod } = this.state;
+
     this.slider = new RangeSlider({
       domElements: slider,
       min: MIN_DATE,
@@ -72,7 +74,7 @@ class App {
       onChange: this.handleRangeSliderChange,
     });
 
-    this.sliderWireframeChart = new Chart(slider.wireframe);
+    this.sliderPreviewChart = new Chart(slider.canvas);
   }
 
   initDataTypeInputs(dataTypeInputs) {
@@ -91,10 +93,14 @@ class App {
     );
   }
 
-  initPeriodInputs() {
+  initPeriodInputs(periodSelects) {
     const { selectedPeriod } = this.state;
-    const possibleStartDates = range(MIN_DATE, MAX_DATE - 4);
-    const possibleEndDates = range(MIN_DATE + 4, MAX_DATE);
+
+    this.startDateSelect = periodSelects.start;
+    this.endDateSelect = periodSelects.end;
+
+    const possibleStartDates = range(MIN_DATE, MAX_DATE);
+    const possibleEndDates = range(MIN_DATE, MAX_DATE);
 
     possibleStartDates.forEach(year => {
       const option = document.createElement('option');
@@ -122,21 +128,26 @@ class App {
 
   switchDataType = dataType => {
     this.state.selectedDataType = dataType;
+
     this.updateChart();
-    this.updateSliderWireframe();
+    this.updateSliderChartPreview();
   };
 
   handlePeriodChange = (name, value) => {
     const { selectedPeriod } = this.state;
     selectedPeriod[name] = value;
+
     this.slider.setSelectedRange(selectedPeriod.start, selectedPeriod.end);
+
     this.updateChart();
   };
 
   handleRangeSliderChange = newRange => {
     this.state.selectedPeriod = newRange;
+
     this.startDateSelect.value = this.state.selectedPeriod.start;
     this.endDateSelect.value = this.state.selectedPeriod.end;
+
     this.updateChart();
   };
 
@@ -150,7 +161,7 @@ class App {
     });
   }
 
-  updateSliderWireframe() {
+  updateSliderChartPreview() {
     const { selectedDataType } = this.state;
     this.worker.postMessage({
       dataKey: selectedDataType,
@@ -169,13 +180,13 @@ class App {
   };
 
   fillSliderWireframe = data => {
-    this.sliderWireframeChart.clear();
-    this.sliderWireframeChart.draw(data);
+    this.sliderPreviewChart.clear();
+    this.sliderPreviewChart.draw(data);
   };
 
-  async run() {
+  run() {
     this.updateChart();
-    this.updateSliderWireframe();
+    this.updateSliderChartPreview();
   }
 }
 
