@@ -1,7 +1,7 @@
 importScripts('../database/indexedDbManager.js', '../helpers/math.js', '../helpers/binaryFindIndex.js');
 
 onmessage = async function (message) {
-  const { dataKey, dateRange, groupsCount } = message.data;
+  const { dataKey, dateRange, groupsCount, purpose } = message.data;
 
   const  monthRange = {
     min: `${dateRange.start}-01`,
@@ -12,7 +12,7 @@ onmessage = async function (message) {
 
   const averageData = getGroupsAverage(data, groupsCount);
 
-  postMessage(averageData);
+  postMessage({data: averageData, purpose});
 };
 
 function getGroupsAverage(data, groupsCount) {

@@ -85,11 +85,11 @@ class Chart {
 
   highlightPoint(point) {
     this.context.beginPath();
-    this.context.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+    this.context.arc(point.x, point.y, 7, 0, 2 * Math.PI);
     this.context.fillStyle = 'white';
     this.context.fill();
-    this.context.lineWidth = 1;
-    this.context.strokeStyle = 'black';
+    this.context.lineWidth = 4;
+    this.context.strokeStyle = '#B48DF7';
     this.context.stroke();
   }
 
@@ -103,7 +103,8 @@ class Chart {
   }
 
   drawTooltipLine(x) {
-    this.context.strokeStyle = 'gray';
+    this.context.strokeStyle = '#E7EAEB';
+    this.context.lineWidth = 1;
     this.context.beginPath();
     this.context.moveTo(x, 0);
     this.context.lineTo(x, this.canvasHeight + CHART_MARGIN_TOP);
@@ -162,10 +163,13 @@ class Chart {
     };
   };
 
-  drawCanvasPoints(color = 'black') {
+  drawCanvasPoints(color = 'dimgray') {
     const { canvasPoints } = this.state;
 
     this.context.strokeStyle = color;
+    this.context.lineWidth = 1;
+    this.context.lineCap = 'round';
+    this.context.lineJoin = 'round';
 
     this.context.beginPath();
     canvasPoints.forEach(point => {

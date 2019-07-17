@@ -9,7 +9,7 @@
 <body>
 <div class="chart-container">
     <div class="chart-header">
-        <h1>Weather</h1>
+        <h1 class="chart-title">Статистика</h1>
         <div class="period">
             <div class="input-container">
                 <input name="start" class="start-date" type="number" placeholder="Начало"/>
@@ -20,6 +20,14 @@
         </div>
     </div>
     <canvas id="chart" width="800" height="465"></canvas>
+    <div class='slider-container'>
+        <canvas class="slider-wireframe"></canvas>
+        <div class="mask left"></div>
+        <div class="mask right"></div>
+        <div class="slider-handle left"></div>
+        <div class="slider-handle right"></div>
+        <div class="selected-range"></div>
+    </div>
 </div>
 <script type="module" src="index.js"></script>
 </body>
