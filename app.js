@@ -3,6 +3,7 @@ import { RangeSlider } from './range-slider/RangeSlider.js';
 import { range } from './helpers/range.js';
 import { throttle } from './helpers/throttle.js';
 import { removeAllChilds } from './helpers/dom.js';
+import { absoluteValueToNormalized } from './helpers/normalization.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -77,6 +78,7 @@ class App {
       valuePerStep: 1,
       onChange: this.handleRangeSliderChange,
     });
+    this.selectedRange = slider.selectedRange;
 
     this.sliderPreviewChart = new Chart(slider.canvas);
   }
@@ -152,7 +154,7 @@ class App {
 
   handlePeriodSelectChange = (name, value) => {
     const { selectedPeriod } = this.state;
-    selectedPeriod[name] = +value;
+    selectedPeriod[name] = parseInt(value, 10);
 
     const otherPeriodSelectName = name === 'start' ? 'end' : 'start';
     this.updatePeriodSelectOptions(otherPeriodSelectName);
@@ -175,11 +177,14 @@ class App {
   };
 
   updateChart() {
+    const { width: selectedRangeWidth } = this.selectedRange.getBoundingClientRect();
+    const normalizedRangeLength = absoluteValueToNormalized(selectedRangeWidth, 0, this.sliderPreviewChart.width);
+
     const { selectedDataType, selectedPeriod } = this.state;
     this.worker.postMessage({
       dataKey: selectedDataType,
       dateRange: selectedPeriod,
-      groupsCount: 12,
+      groupsCount: 50 * normalizedRangeLength,
       purpose: PURPOSE.CHART,
     });
   }
@@ -192,7 +197,7 @@ class App {
         start: MIN_DATE,
         end: MAX_DATE,
       },
-      groupsCount: 165,
+      groupsCount: 50,
       purpose: PURPOSE.SLIDER,
     });
   }

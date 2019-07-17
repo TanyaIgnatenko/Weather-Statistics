@@ -1,6 +1,12 @@
 import { makeDraggable } from '../helpers/draggable.js';
 import { clamp } from '../helpers/clamp.js';
 
+import {
+  absoluteRangeToNormalized,
+  absoluteValueToNormalized,
+  normalizedRangeToAbsolute,
+} from '../helpers/normalization.js';
+
 class RangeSlider {
   state = {
     selectedRange: {
@@ -10,14 +16,13 @@ class RangeSlider {
   };
 
   constructor({
-                domElements,
-                min,
-                max,
-                selectedRange,
-                valuePerStep = 1,
-                onChange = () => {
-                },
-              }) {
+    domElements,
+    min,
+    max,
+    selectedRange,
+    valuePerStep = 1,
+    onChange = () => {},
+  }) {
     this.min = min;
     this.max = max;
     this.valuePerStep = valuePerStep;
@@ -63,8 +68,10 @@ class RangeSlider {
 
   synchronizePositionsWithState() {
     const { selectedRange } = this.state;
-    const normalizedSelectedRange = this.absoluteRangeToNormalized(
+    const normalizedSelectedRange = absoluteRangeToNormalized(
       selectedRange,
+      this.min,
+      this.max,
     );
 
     this.leftHandle.style.left = `${normalizedSelectedRange.start * 100}%`;
@@ -87,40 +94,52 @@ class RangeSlider {
   }
 
   handleStartHandleDrag = newPosition => {
-    const normalizedValue = this.pagePositionToNormalizedValue(newPosition);
+    const normalizedValue = absoluteValueToNormalized(
+      newPosition,
+      this.sliderLeft,
+      this.sliderWidth,
+    );
     const endHandleValue = this.state.selectedRange.end;
-    const normalizedEndHandleValue = this.absoluteValueToNormalized(
+    const normalizedEndHandleValue = absoluteValueToNormalized(
       endHandleValue,
+      this.min,
+      this.max,
     );
 
-    const clampedValue = clamp(
-      normalizedValue,
-      0,
-      normalizedEndHandleValue,
-    );
+    const clampedValue = clamp(normalizedValue, 0, normalizedEndHandleValue);
 
     const { selectedRange } = this.state;
-    const normalizedRange = this.absoluteRangeToNormalized(selectedRange);
+    const normalizedRange = absoluteRangeToNormalized(
+      selectedRange,
+      this.min,
+      this.max,
+    );
     normalizedRange.start = clampedValue;
 
     this.handleSelectedRangeChange(normalizedRange);
   };
 
   handleEndHandleDrag = newPosition => {
-    const normalizedValue = this.pagePositionToNormalizedValue(newPosition);
+    const normalizedValue = absoluteValueToNormalized(
+      newPosition,
+      this.sliderLeft,
+      this.sliderWidth,
+    );
     const startHandleValue = this.state.selectedRange.start;
-    const normalizedStartHandleValue = this.absoluteValueToNormalized(
+    const normalizedStartHandleValue = absoluteValueToNormalized(
       startHandleValue,
+      this.min,
+      this.max,
     );
 
-    const clampedValue = clamp(
-      normalizedValue,
-      normalizedStartHandleValue,
-      1,
-    );
+    const clampedValue = clamp(normalizedValue, normalizedStartHandleValue, 1);
 
     const { selectedRange } = this.state;
-    const normalizedRange = this.absoluteRangeToNormalized(selectedRange);
+    const normalizedRange = absoluteRangeToNormalized(
+      selectedRange,
+      this.min,
+      this.max,
+    );
     normalizedRange.end = clampedValue;
 
     this.handleSelectedRangeChange(normalizedRange);
@@ -128,14 +147,18 @@ class RangeSlider {
 
   handleSelectedRangeDrag = newPosition => {
     const { selectedRange } = this.state;
-    const normalizedSelectedRange = this.absoluteRangeToNormalized(
+    const normalizedSelectedRange = absoluteRangeToNormalized(
       selectedRange,
+      this.min,
+      this.max,
     );
     const normalizedSelectedRangeLength =
       normalizedSelectedRange.end - normalizedSelectedRange.start;
 
-    const normalizedStartValue = this.pagePositionToNormalizedValue(
+    const normalizedStartValue = absoluteValueToNormalized(
       newPosition,
+      this.sliderLeft,
+      this.sliderWidth,
     );
     const clampedStartValue = clamp(
       normalizedStartValue,
@@ -152,7 +175,11 @@ class RangeSlider {
   };
 
   handleSelectedRangeChange = normalizedRange => {
-    const absoluteRange = this.normalizedRangeToAbsolute(normalizedRange);
+    const absoluteRange = normalizedRangeToAbsolute(
+      normalizedRange,
+      this.min,
+      this.max,
+    );
     this.state.selectedRange = absoluteRange;
     this.synchronizePositionsWithState();
 
@@ -174,28 +201,6 @@ class RangeSlider {
 
   roundValue = value => {
     return Math.round(value / this.valuePerStep) * this.valuePerStep;
-  };
-
-  absoluteRangeToNormalized = absoluteRange => ({
-    start: this.absoluteValueToNormalized(absoluteRange.start),
-    end: this.absoluteValueToNormalized(absoluteRange.end),
-  });
-
-  absoluteValueToNormalized = absoluteValue => {
-    return (absoluteValue - this.min) / (this.max - this.min);
-  };
-
-  normalizedValueToAbsolute = normalizedValue => {
-    return normalizedValue * (this.max - this.min) + this.min;
-  };
-
-  normalizedRangeToAbsolute = absoluteRange => ({
-    start: this.normalizedValueToAbsolute(absoluteRange.start),
-    end: this.normalizedValueToAbsolute(absoluteRange.end),
-  });
-
-  pagePositionToNormalizedValue = position => {
-    return (position - this.sliderLeft) / this.sliderWidth;
   };
 }
 

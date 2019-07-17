@@ -40,6 +40,14 @@ class Chart {
     this.canvas.onmousemove = this.showPlaceholder;
   }
 
+  get width() {
+    return this.canvas.width;
+  }
+
+  get height() {
+    return this.canvas.height;
+  }
+
   showPlaceholder = (event) => {
     const { clientX, clientY } = event;
 
