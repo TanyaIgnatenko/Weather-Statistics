@@ -1,10 +1,10 @@
-import { Chart } from './chart/chart.js';
 import { RangeSlider } from './range-slider/RangeSlider.js';
+import { Chart } from './chart/chart.js';
 import { range } from './helpers/range.js';
+import { clamp } from './helpers/clamp.js';
 import { throttle } from './helpers/throttle.js';
 import { removeAllChilds } from './helpers/dom.js';
 import { absoluteValueToNormalized } from './helpers/systemConversion.js';
-import { clamp } from './helpers/clamp.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -34,7 +34,12 @@ class App {
     },
   };
 
-  constructor(chartCanvas, dataTypeInputs, periodSelects, slider) {
+  constructor(chartCanvas, dataTypeInputs, periodSelects, slider, errorContainer) {
+    this.chartCanvas = chartCanvas;
+    this.sliderContainer = slider.container;
+    this.selectedRange = slider.selectedRange;
+    this.errorContainer = errorContainer;
+
     this.initPeriodSelects(periodSelects);
     this.initDataTypeInputs(dataTypeInputs);
     this.initRangeSlider(slider);
@@ -63,10 +68,15 @@ class App {
           break;
         }
         default: {
-          console.error('Uknown purpose: ', purpose);
+          console.error('Unknown purpose: ', purpose);
         }
       }
     };
+    this.worker.onerror = () => {
+      this.chartCanvas.classList.add('hidden');
+      this.sliderContainer.classList.add('hidden');
+      this.errorContainer.classList.remove('hidden');
+    }
   }
 
   initChart(chartCanvas) {
@@ -93,7 +103,6 @@ class App {
       valuePerStep: 1,
       onChange: this.handleRangeSliderChange,
     });
-    this.selectedRange = slider.selectedRange;
 
     this.sliderPreviewChart = new Chart(slider.canvas);
   }

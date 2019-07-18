@@ -8,14 +8,14 @@ class IndexedDbManager {
     const openRequest = indexedDB.open('weather-statistics');
 
     openRequest.onupgradeneeded = ({ oldVersion, target: { result } }) => {
-      const db = result;
+      this.db = result;
 
       if (oldVersion < 1) {
-        IndexedDbManager.createDbScheme(db);
+        IndexedDbManager.createDbScheme(this.db);
       }
 
-      db.onversionchange = function (event) {
-        db.close();
+      this.db.onversionchange = (event) => {
+        this.db.close();
       };
     };
 
@@ -28,9 +28,12 @@ class IndexedDbManager {
   }
 
   async retrieveData(dataKey, monthRange) {
-    const db = await this.openDb();
+    const db = this.db
+      ? this.db
+      : await this.openDb();
 
     await IndexedDbManager.ensureDataPresent(db, dataKey);
+
 
     const store = db.transaction(dataKey).objectStore(dataKey);
 
@@ -39,7 +42,7 @@ class IndexedDbManager {
 
     const data = [];
     await new Promise((resolve, reject) => {
-      cursorRequest.onsuccess = function (event) {
+      cursorRequest.onsuccess = function(event) {
         const cursor = event.target.result;
         if (cursor) {
           data.push(...cursor.value);
@@ -89,14 +92,14 @@ class IndexedDbManager {
 function toPromise(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    request.onerror = () => throw request.error;
   });
 }
 
 function fetchData(dataKey) {
   return fetch(`../data/${dataKey}.json`)
     .then(data => data.json())
-    .catch(error => console.error(`Failed to retrieve ${dataKey}.json. Error: ${error}`));
+    .catch(error => throw `Failed to retrieve ${dataKey}.json. Error: ${error}`);
 }
 
 function getMonth(item) {

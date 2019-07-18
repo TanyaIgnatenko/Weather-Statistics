@@ -1,5 +1,7 @@
 importScripts('../database/indexedDbManager.js', '../helpers/math.js');
 
+const dbManager = new IndexedDbManager();
+
 onmessage = async function (message) {
   const { dataKey, dateRange, groupsCount, purpose } = message.data;
 
@@ -7,7 +9,7 @@ onmessage = async function (message) {
     min: `${dateRange.start}-01`,
     max: `${dateRange.end}-01`,
   };
-  const dbManager = new IndexedDbManager();
+
   const data = await dbManager.retrieveData(dataKey, monthRange);
 
   const averageData = getGroupsAverage(data, groupsCount);
