@@ -16,7 +16,6 @@ class IndexedDbManager {
 
       db.onversionchange = function (event) {
         db.close();
-        alert("A new version of this page is ready. Please reload!");
       };
     };
 
@@ -63,7 +62,6 @@ class IndexedDbManager {
 
     IndexedDbManager.fillStoreWith(store, data);
 
-    db.close();
     const versionChangeRequest = indexedDB.open('weather-statistics', Number(db.version * VERSION_FACTOR[dataKey]));
 
     return toPromise(versionChangeRequest);

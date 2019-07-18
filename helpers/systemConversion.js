@@ -20,9 +20,20 @@ function normalizedRangeToAbsolute(absoluteRange, min, max) {
   }
 }
 
+function fromOneSystemToAnother({value, oldMin, oldMax, newMin, newMax}) {
+  const normalizedValue = absoluteValueToNormalized(value, oldMin, oldMax);
+  return normalizedValueToAbsolute(normalizedValue, newMin, newMax);
+}
+
+function invert(value, min, max) {
+  return max - value + min;
+}
+
 export {
   absoluteValueToNormalized,
   normalizedValueToAbsolute,
   absoluteRangeToNormalized,
   normalizedRangeToAbsolute,
+  fromOneSystemToAnother,
+  invert,
 }

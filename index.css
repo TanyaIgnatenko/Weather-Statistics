@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -10,11 +11,13 @@ body {
 .chart-container {
     display: flex;
     flex-direction: column;
+    width: 980px;
     padding: 40px;
-    width: 900px;
 }
 
 #chart {
+    width: 900px;
+    height: 430px;
     background: white;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -28,6 +31,7 @@ body {
 .chart-header {
     display: flex;
     justify-content: space-between;
+    width: 900px;
     padding: 15px 30px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -97,7 +101,7 @@ body {
 }
 
 .slider-handle, .mask, .slider-wireframe {
-    height: 60px;
+    height: 56px;
 }
 
 .selected-range {
@@ -143,7 +147,7 @@ body {
     border: 2px solid #C0D1E1;
 }
 
-.slider-wireframe {
+.slider-canvas {
     background: white;
     border-radius: 6px;
 }

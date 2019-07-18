@@ -3,7 +3,7 @@ import { RangeSlider } from './range-slider/RangeSlider.js';
 import { range } from './helpers/range.js';
 import { throttle } from './helpers/throttle.js';
 import { removeAllChilds } from './helpers/dom.js';
-import { absoluteValueToNormalized } from './helpers/normalization.js';
+import { absoluteValueToNormalized } from './helpers/systemConversion.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -12,6 +12,11 @@ const MAX_DATE = 2006;
 const DATA_TYPE = {
   TEMPERATURE: 'temperature',
   PRECIPITATION: 'precipitation',
+};
+
+const unitsByType = {
+  temperature: '℃',
+  precipitation: 'мм',
 };
 
 const PURPOSE = {
@@ -64,7 +69,10 @@ class App {
   }
 
   initChart(chartCanvas) {
-    this.chart = new Chart(chartCanvas);
+    const { selectedDataType } = this.state;
+
+    const dataUnits =  unitsByType[selectedDataType];
+    this.chart = new Chart(chartCanvas, true, value => value + dataUnits);
   }
 
   initRangeSlider(slider) {
@@ -204,12 +212,12 @@ class App {
 
   drawChart = data => {
     this.chart.clear();
-    this.chart.draw(data);
+    this.chart.drawChartFor(data);
   };
 
   drawSliderPreviewChart = data => {
     this.sliderPreviewChart.clear();
-    this.sliderPreviewChart.draw(data);
+    this.sliderPreviewChart.drawChartFor(data);
   };
 
   run() {

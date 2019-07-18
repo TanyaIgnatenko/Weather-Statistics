@@ -1,90 +1,163 @@
-import { distance } from '../helpers/distance.js';
+import { invert, fromOneSystemToAnother } from '../helpers/systemConversion.js';
+import { binaryFindIndex } from '../helpers/binaryFindIndex.js';
+import { clamp } from '../helpers/clamp.js';
 
-function absoluteValueToNormalized(value, min, max) {
-  return (value - min) / (max - min);
-}
+const CHART_OFFSET_X = 10;
+const CHART_OFFSET_Y = 10;
 
-function normalizedValueToAbsolute(normalizedValue, min, max) {
-  return normalizedValue * (max - min) + min;
-}
-
-const CHART_MARGIN_TOP = 0;
+const TOOLTIP_ZONE_HEIGHT = 100;
 const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
-const TOOLTIP_TOP = 30;
-const CHART_OFFSET_X = 10;
+const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
+const TOOLTIP_TEXT_OFFSET_LEFT = 10;
+const TOOLTIP_TEXT_OFFSET_TOP = 5;
+
+const defaultChartStyle = {
+  strokeStyle: 'dimgray',
+  lineJoin: 'round',
+  lineCap: 'round',
+  lineWidth: 1,
+};
+
+const defaultTooltipBoxStyle = {
+  fillStyle: 'white',
+  strokeStyle: 'gray',
+};
+
+const defaultTooltipTextStyle = {
+  fillStyle: 'black',
+};
+
+const defaultTooltipLineStyle = {
+  strokeStyle: '#E7EAEB',
+  lineWidth: 1,
+};
+
+const defaultHighlightingPointStyle = {
+  fillStyle: 'white',
+  strokeStyle: '#B48DF7',
+  lineWidth: 4,
+};
 
 class Chart {
   state = {
     canvasPoints: [],
   };
 
-  constructor(canvas) {
-    this.context = canvas.getContext('2d');
-
-    const canvasRect = canvas.getBoundingClientRect();
+  constructor(
+    canvas,
+    showPlaceholder,
+    formatTooltipText = value => value,
+    styles = {
+      chart: defaultChartStyle,
+      tooltipBox: defaultTooltipBoxStyle,
+      tooltipText: defaultTooltipTextStyle,
+      tooltipLine: defaultTooltipLineStyle,
+      highlightingPoint: defaultHighlightingPointStyle,
+    },
+  ) {
     this.canvas = canvas;
-    this.canvasLeft = canvasRect.left;
-    this.canvasTop = canvasRect.top;
-    this.canvasWidth = canvas.width;
-    this.canvasHeight = canvas.height - CHART_MARGIN_TOP;
+    this.context = canvas.getContext('2d');
+    this.formatTooltipText = formatTooltipText;
+    this.styles = styles;
 
-    this.chartWidth = this.canvasWidth - 2 * CHART_OFFSET_X;
-    this.chartHeight = this.canvasHeight;
+    this.measureElementsSize();
 
-    this.tooltipCenterXLimit = {
-      left: TOOLTIP_WIDTH / 2 + CHART_OFFSET_X,
-      right: this.canvasWidth - TOOLTIP_WIDTH / 2 - CHART_OFFSET_X,
-    };
-
-    this.canvas.onmousemove = this.showPlaceholder;
+    if (showPlaceholder) {
+      this.prepareToShowTooltip();
+    }
   }
 
   get width() {
-    return this.canvas.width;
+    return this.canvasWidth;
   }
 
   get height() {
-    return this.canvas.height;
+    return this.canvasHeight;
   }
 
-  showPlaceholder = (event) => {
+  measureElementsSize() {
+    const canvasRect = this.canvas.getBoundingClientRect();
+    this.canvasLeft = canvasRect.left;
+    this.canvasTop = canvasRect.top;
+    this.canvasWidth = canvasRect.width;
+    this.canvasHeight = canvasRect.height;
+
+    this.chartLeft = CHART_OFFSET_X;
+    this.chartRight = canvasRect.width - CHART_OFFSET_X;
+    this.chartTop = CHART_OFFSET_Y;
+    this.chartBottom = canvasRect.height - CHART_OFFSET_Y;
+  }
+
+  prepareToShowTooltip() {
+    this.chartTop += TOOLTIP_ZONE_HEIGHT;
+
+    this.tooltipCenterXLimit = {
+      left: this.chartLeft + TOOLTIP_WIDTH / 2,
+      right: this.chartRight - TOOLTIP_WIDTH / 2,
+    };
+
+    this.canvas.addEventListener('mousemove', this.showPlaceholder);
+    this.canvas.addEventListener('mouseleave', this.removePlaceholder);
+  }
+
+  showPlaceholder = event => {
     const { clientX, clientY } = event;
 
-    const canvasPoint = this.fromClientPointToCanvasPoint({ x: clientX, y: clientY });
+    const canvasPoint = this.clientPointToCanvasPoint({
+      x: clientX,
+      y: clientY,
+    });
     const closestChartPoint = this.findClosestChartPoint(canvasPoint);
+
     this.drawPlaceholderFor(closestChartPoint);
   };
-
-  fromClientPointToCanvasPoint(point) {
-    return {
-      x: point.x - this.canvasLeft,
-      y: point.y - this.canvasTop,
-    };
-  }
 
   findClosestChartPoint(canvasPoint) {
     const { canvasPoints } = this.state;
 
-    const { chartPoint } = canvasPoints.reduce((minDistInfo, chartPoint) => {
-      const dist = distance(chartPoint, canvasPoint);
-      const isLess = dist < minDistInfo.dist;
-      return isLess
-        ? {
-          dist,
-          chartPoint,
-        }
-        : minDistInfo;
-    }, { dist: Infinity, chartPoint: null });
+    const rightClosestPointIdx = binaryFindIndex(canvasPoints, point => point.x > canvasPoint.x);
 
-    return chartPoint;
+    // point after chart
+    if(rightClosestPointIdx === null) {
+      return canvasPoints[canvasPoints.length - 1];
+    }
+
+    const rightClosestPoint = canvasPoints[rightClosestPointIdx];
+    const leftClosestPoint = canvasPoints[rightClosestPointIdx - 1];
+
+    // point before chart
+    if(!leftClosestPoint) return rightClosestPointIdx;
+
+    const distToLeftPoint = leftClosestPoint.x - canvasPoint.x;
+    const distToRightPoint = rightClosestPoint.x - canvasPoint.x;
+
+    return distToLeftPoint < distToRightPoint
+      ? leftClosestPoint
+      : rightClosestPoint;
   }
 
   drawPlaceholderFor(point) {
     this.redrawChartOnly();
-    this.drawTooltipFor(point);
+    this.drawTooltipLine(point.x);
+
+    const invertedY = invert(point.y, this.chartTop, this.chartBottom);
+    const valueInUserSystem = fromOneSystemToAnother({
+      value: invertedY,
+      oldMin: this.chartTop,
+      oldMax: this.chartBottom,
+      newMin: this.rangeY.min,
+      newMax: this.rangeY.max,
+    }).toFixed(1);
+    const tooltipText = this.formatTooltipText(valueInUserSystem);
+    this.drawTooltipBox(point.x, tooltipText);
+
     this.highlightPoint(point);
   }
+
+  removePlaceholder = () => {
+    this.redrawChartOnly();
+  };
 
   redrawChartOnly() {
     this.clear();
@@ -92,98 +165,122 @@ class Chart {
   }
 
   highlightPoint(point) {
+    this.applyStyles(this.styles.highlightingPoint);
+
     this.context.beginPath();
     this.context.arc(point.x, point.y, 7, 0, 2 * Math.PI);
-    this.context.fillStyle = 'white';
     this.context.fill();
-    this.context.lineWidth = 4;
-    this.context.strokeStyle = '#B48DF7';
     this.context.stroke();
-  }
-
-  drawTooltipFor(point) {
-    this.drawTooltipLine(point.x);
-
-    const normalizedValue = 1 - point.y / this.canvasHeight;
-    const absoluteValue = normalizedValueToAbsolute(normalizedValue, this.rangeY.min, this.rangeY.max);
-    const tooltipText = `Значение ${absoluteValue.toFixed(1)}`;
-    this.drawTooltip(point.x, tooltipText);
   }
 
   drawTooltipLine(x) {
-    this.context.strokeStyle = '#E7EAEB';
-    this.context.lineWidth = 1;
+    this.applyStyles(this.styles.tooltipLine);
+
     this.context.beginPath();
-    this.context.moveTo(x, 0);
-    this.context.lineTo(x, this.canvasHeight + CHART_MARGIN_TOP);
+    this.context.moveTo(x, TOOLTIP_TOP);
+    this.context.lineTo(x, this.chartBottom);
     this.context.stroke();
   }
 
-  drawTooltip(centerX, text) {
-    centerX = centerX < this.tooltipCenterXLimit.left
-      ? this.tooltipCenterXLimit.left
-      : centerX;
-
-    centerX = centerX > this.tooltipCenterXLimit.right
-      ? this.tooltipCenterXLimit.right
-      : centerX;
+  drawTooltipBox(desiredCenterX, text) {
+    const centerX = clamp(
+      desiredCenterX,
+      this.tooltipCenterXLimit.left,
+      this.tooltipCenterXLimit.right,
+    );
 
     const tooltipLeft = centerX - TOOLTIP_WIDTH / 2;
     const tooltipTop = TOOLTIP_TOP;
 
+    this.applyStyles(this.styles.tooltipBox);
     this.context.rect(tooltipLeft, tooltipTop, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-    this.context.strokeStyle = 'gray';
     this.context.stroke();
-    this.context.fillStyle = 'white';
     this.context.fill();
 
-    this.context.fillStyle = 'black';
-    this.context.fillText(text, tooltipLeft + 10, tooltipTop + TOOLTIP_HEIGHT / 2 + 5);
+    this.applyStyles(this.styles.tooltipText);
+    this.context.fillText(
+      text,
+      tooltipLeft + TOOLTIP_TEXT_OFFSET_LEFT,
+      tooltipTop + TOOLTIP_HEIGHT / 2 + TOOLTIP_TEXT_OFFSET_TOP,
+    );
   }
 
   clear() {
-    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight + CHART_MARGIN_TOP);
+    this.context.clearRect(
+      0,
+      0,
+      this.canvasWidth,
+      this.canvasHeight,
+    );
   }
 
-  draw(points, color = 'black') {
-    this.state.canvasPoints = this.toCanvasPoints(points);
-    this.drawCanvasPoints(color);
+  drawChartFor(data) {
+    this.state.canvasPoints = this.dataToCanvasPoints(data);
+    this.drawCanvasPoints();
   }
 
-  toCanvasPoints(points) {
-    this.rangeX = {
-      min: points[0].x,
-      max: points[points.length - 1].x
-    };
-    this.rangeY = {
-      min: points.reduce((min, point) => Math.min(min, point.y), Infinity),
-      max: points.reduce((max, point) => Math.max(max, point.y), -Infinity)
-    };
-
-    return points.map(this.fromAbsoluteValuesToCanvasPoint);
-  }
-
-  fromAbsoluteValuesToCanvasPoint = (point) => {
-    return {
-      x: CHART_OFFSET_X + Math.round(absoluteValueToNormalized(point.x, this.rangeX.min, this.rangeX.max) * this.chartWidth),
-      y: CHART_MARGIN_TOP
-        + Math.round((1 - absoluteValueToNormalized(point.y, this.rangeY.min, this.rangeY.max)) * this.chartHeight),
-    };
-  };
-
-  drawCanvasPoints(color = 'dimgray') {
+  drawCanvasPoints() {
     const { canvasPoints } = this.state;
 
-    this.context.strokeStyle = color;
-    this.context.lineWidth = 1;
-    this.context.lineCap = 'round';
-    this.context.lineJoin = 'round';
+    this.applyStyles(this.styles.chart);
 
     this.context.beginPath();
     canvasPoints.forEach(point => {
       this.context.lineTo(point.x, point.y);
     });
     this.context.stroke();
+  }
+
+  dataToCanvasPoints(data) {
+    this.rangeX = {
+      min: data[0].x,
+      max: data[data.length - 1].x,
+    };
+    this.rangeY = {
+      min: data.reduce((min, point) => Math.min(min, point.y), Infinity),
+      max: data.reduce((max, point) => Math.max(max, point.y), -Infinity),
+    };
+
+    return data.map(this.dataToCanvasPoint);
+  }
+
+  dataToCanvasPoint = data => {
+    const canvasPoint = {
+      x: Math.round(
+        fromOneSystemToAnother({
+          value: data.x,
+          oldMin: this.rangeX.min,
+          oldMax: this.rangeX.max,
+          newMin: this.chartLeft,
+          newMax: this.chartRight,
+        }),
+      ),
+      y: Math.round(
+          fromOneSystemToAnother({
+            value: data.y,
+            oldMin: this.rangeY.min,
+            oldMax: this.rangeY.max,
+            newMin: this.chartTop,
+            newMax: this.chartBottom,
+          }),
+      ),
+    };
+    canvasPoint.y = invert(canvasPoint.y, this.chartTop, this.chartBottom);
+
+    return canvasPoint;
+  };
+
+  clientPointToCanvasPoint(point) {
+    return {
+      x: point.x - this.canvasLeft,
+      y: point.y - this.canvasTop,
+    };
+  }
+
+  applyStyles(styles) {
+    for(const styleProp in styles) {
+      this.context[styleProp] = styles[styleProp];
+    }
   }
 }
 

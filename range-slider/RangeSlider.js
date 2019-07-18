@@ -5,7 +5,7 @@ import {
   absoluteRangeToNormalized,
   absoluteValueToNormalized,
   normalizedRangeToAbsolute,
-} from '../helpers/normalization.js';
+} from '../helpers/systemConversion.js';
 
 class RangeSlider {
   state = {

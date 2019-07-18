@@ -1,4 +1,4 @@
-importScripts('../database/indexedDbManager.js', '../helpers/math.js', '../helpers/binaryFindIndex.js');
+importScripts('../database/indexedDbManager.js', '../helpers/math.js');
 
 onmessage = async function (message) {
   const { dataKey, dateRange, groupsCount, purpose } = message.data;
