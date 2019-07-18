@@ -4,6 +4,7 @@ import { range } from './helpers/range.js';
 import { throttle } from './helpers/throttle.js';
 import { removeAllChilds } from './helpers/dom.js';
 import { absoluteValueToNormalized } from './helpers/systemConversion.js';
+import { clamp } from './helpers/clamp.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -40,10 +41,10 @@ class App {
     this.initChart(chartCanvas);
     this.initWorker();
 
-    this.updateChart = throttle(this.updateChart, 100);
+    this.updateChart = throttle(this.updateChart, 200);
     this.updateSliderChartPreview = throttle(
       this.updateSliderChartPreview,
-      100,
+      200,
     );
   }
 
@@ -194,11 +195,13 @@ class App {
       this.sliderPreviewChart.width,
     );
 
+    const groupsCount = clamp(50 * normalizedRangeLength, 3, 50);
+
     const { selectedDataType, selectedPeriod } = this.state;
     this.worker.postMessage({
       dataKey: selectedDataType,
       dateRange: selectedPeriod,
-      groupsCount: 50 * normalizedRangeLength,
+      groupsCount,
       purpose: PURPOSE.CHART,
     });
   }
