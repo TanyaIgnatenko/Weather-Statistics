@@ -46,10 +46,10 @@ class App {
     this.initChart(chartCanvas);
     this.initWorker();
 
-    this.updateChart = throttle(this.updateChart, 200);
+    this.updateChart = throttle(this.updateChart, 150);
     this.updateSliderChartPreview = throttle(
       this.updateSliderChartPreview,
-      200,
+      150,
     );
   }
 
@@ -72,11 +72,11 @@ class App {
         }
       }
     };
-    // this.worker.onerror = () => {
-    //   this.chartCanvas.classList.add('hidden');
-    //   this.sliderContainer.classList.add('hidden');
-    //   this.errorContainer.classList.remove('hidden');
-    // }
+    this.worker.onerror = () => {
+      this.chartCanvas.classList.add('hidden');
+      this.sliderContainer.classList.add('hidden');
+      this.errorContainer.classList.remove('hidden');
+    }
   }
 
   initChart(chartCanvas) {

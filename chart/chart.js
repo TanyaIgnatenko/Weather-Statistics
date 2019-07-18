@@ -1,5 +1,5 @@
 import { invert, fromOneSystemToAnother } from '../helpers/systemConversion.js';
-import { binaryFindIndex } from '../helpers/binaryFindIndexES6.js';
+import { binaryFindIndex } from '../helpers/binaryFindIndex.js';
 import { clamp } from '../helpers/clamp.js';
 
 const CHART_OFFSET_X = 10;
