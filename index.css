@@ -113,6 +113,7 @@ body {
     position: absolute;
     width: 16px;
     background: #C0D1E1;
+    touch-action: none;
 }
 
 .slider-handle.left {
@@ -145,6 +146,7 @@ body {
     position: absolute;
     width: 900px;
     border: 2px solid #C0D1E1;
+    touch-action: none;
 }
 
 .slider-canvas {

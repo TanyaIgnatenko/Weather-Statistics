@@ -1,20 +1,23 @@
-importScripts('../database/indexedDbManager.js', '../helpers/math.js');
+importScripts('../helpers/math.js', '../helpers/binaryFindIndex.js');
 
-const dbManager = new IndexedDbManager();
+const fetchedData = {};
 
-onmessage = async function (message) {
+onmessage = async function(message) {
   const { dataKey, dateRange, groupsCount, purpose } = message.data;
 
-  const  monthRange = {
-    min: `${dateRange.start}-01`,
-    max: `${dateRange.end}-01`,
-  };
+  if(!fetchedData[dataKey]) {
+    fetchedData[dataKey] = await fetch(`../data/${dataKey}.json`)
+      .then(data => data.json())
+      .catch(error => {
+        throw new Error(`Failed to retrieve ${dataKey}.json. Error: ${error}`);
+      });
+  }
 
-  const data = await dbManager.retrieveData(dataKey, monthRange);
+  const data = filterData(fetchedData[dataKey], dateRange.start, dateRange.end);
 
   const averageData = getGroupsAverage(data, groupsCount);
 
-  postMessage({data: averageData, purpose});
+  postMessage({ data: averageData, purpose });
 };
 
 function getGroupsAverage(data, groupsCount) {
@@ -33,7 +36,7 @@ function calculateGroupAverage(groups) {
     return ({
       x: unixTime,
       y: average(group.map(data => data.v)),
-    })
+    });
   });
 }
 
@@ -55,4 +58,17 @@ function divideIntoGroups(data, groupsCount) {
   }
 
   return groups;
+}
+
+function filterData(data, startDate, endDate) {
+  const startIdx = binaryFindIndex(data, data => {
+    const [ year ] = data.t.split('-');
+    return year >= startDate;
+  });
+  const endIdx = binaryFindIndex(data, data => {
+    const [ year ] = data.t.split('-');
+    return year > endDate;
+  }) || data.length;
+
+  return data.slice(startIdx, endIdx);
 }

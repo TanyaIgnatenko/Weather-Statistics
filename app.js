@@ -72,11 +72,11 @@ class App {
         }
       }
     };
-    this.worker.onerror = () => {
-      this.chartCanvas.classList.add('hidden');
-      this.sliderContainer.classList.add('hidden');
-      this.errorContainer.classList.remove('hidden');
-    }
+    // this.worker.onerror = () => {
+    //   this.chartCanvas.classList.add('hidden');
+    //   this.sliderContainer.classList.add('hidden');
+    //   this.errorContainer.classList.remove('hidden');
+    // }
   }
 
   initChart(chartCanvas) {

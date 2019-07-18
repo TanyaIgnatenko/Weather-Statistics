@@ -1,5 +1,5 @@
 import { invert, fromOneSystemToAnother } from '../helpers/systemConversion.js';
-import { binaryFindIndex } from '../helpers/binaryFindIndex.js';
+import { binaryFindIndex } from '../helpers/binaryFindIndexES6.js';
 import { clamp } from '../helpers/clamp.js';
 
 const CHART_OFFSET_X = 10;
@@ -9,7 +9,7 @@ const TOOLTIP_ZONE_HEIGHT = 100;
 const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
 const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
-const TOOLTIP_TEXT_OFFSET_LEFT = 10;
+const TOOLTIP_TEXT_OFFSET_LEFT = 38;
 const TOOLTIP_TEXT_OFFSET_TOP = 5;
 
 const defaultChartStyle = {
@@ -26,6 +26,7 @@ const defaultTooltipBoxStyle = {
 
 const defaultTooltipTextStyle = {
   fillStyle: 'black',
+  font: '16px Roboto',
 };
 
 const defaultTooltipLineStyle = {
@@ -116,10 +117,13 @@ class Chart {
   findClosestChartPoint(canvasPoint) {
     const { canvasPoints } = this.state;
 
-    const rightClosestPointIdx = binaryFindIndex(canvasPoints, point => point.x > canvasPoint.x);
+    const rightClosestPointIdx = binaryFindIndex(
+      canvasPoints,
+      point => point.x > canvasPoint.x,
+    );
 
     // point after chart
-    if(rightClosestPointIdx === null) {
+    if (rightClosestPointIdx === null) {
       return canvasPoints[canvasPoints.length - 1];
     }
 
@@ -127,7 +131,7 @@ class Chart {
     const leftClosestPoint = canvasPoints[rightClosestPointIdx - 1];
 
     // point before chart
-    if(!leftClosestPoint) return rightClosestPointIdx;
+    if (!leftClosestPoint) return rightClosestPointIdx;
 
     const distToLeftPoint = leftClosestPoint.x - canvasPoint.x;
     const distToRightPoint = rightClosestPoint.x - canvasPoint.x;
@@ -201,17 +205,12 @@ class Chart {
     this.context.fillText(
       text,
       tooltipLeft + TOOLTIP_TEXT_OFFSET_LEFT,
-      tooltipTop + TOOLTIP_HEIGHT / 2 + TOOLTIP_TEXT_OFFSET_TOP,
+      tooltipTop + TOOLTIP_HEIGHT / 2 + 8,
     );
   }
 
   clear() {
-    this.context.clearRect(
-      0,
-      0,
-      this.canvasWidth,
-      this.canvasHeight,
-    );
+    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
   drawChartFor(data) {
@@ -256,13 +255,13 @@ class Chart {
         }),
       ),
       y: Math.round(
-          fromOneSystemToAnother({
-            value: data.y,
-            oldMin: this.rangeY.min,
-            oldMax: this.rangeY.max,
-            newMin: this.chartTop,
-            newMax: this.chartBottom,
-          }),
+        fromOneSystemToAnother({
+          value: data.y,
+          oldMin: this.rangeY.min,
+          oldMax: this.rangeY.max,
+          newMin: this.chartTop,
+          newMax: this.chartBottom,
+        }),
       ),
     };
     canvasPoint.y = invert(canvasPoint.y, this.chartTop, this.chartBottom);
@@ -278,7 +277,7 @@ class Chart {
   }
 
   applyStyles(styles) {
-    for(const styleProp in styles) {
+    for (const styleProp in styles) {
       this.context[styleProp] = styles[styleProp];
     }
   }

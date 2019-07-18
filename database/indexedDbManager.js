@@ -1,10 +1,7 @@
-const VERSION_FACTOR = {
-  temperature: 2,
-  precipitation: 3,
-};
-
 class IndexedDbManager {
   openDb() {
+    if(this.db) return this.db;
+
     const openRequest = indexedDB.open('weather-statistics');
 
     openRequest.onupgradeneeded = ({ oldVersion, target: { result } }) => {
@@ -23,17 +20,15 @@ class IndexedDbManager {
   }
 
   static createDbScheme(db) {
+    db.createObjectStore('metadata');
     db.createObjectStore('temperature');
     db.createObjectStore('precipitation');
   }
 
   async retrieveData(dataKey, monthRange) {
-    const db = this.db
-      ? this.db
-      : await this.openDb();
+    const db = await this.openDb();
 
     await IndexedDbManager.ensureDataPresent(db, dataKey);
-
 
     const store = db.transaction(dataKey).objectStore(dataKey);
 
@@ -57,21 +52,24 @@ class IndexedDbManager {
   }
 
   static async ensureDataPresent(db, dataKey) {
-    if (IndexedDbManager.isDataPresent(db.version, dataKey)) return db;
+    try {
+      return await IndexedDbManager.isDataPresent(db, dataKey);
+    } catch(e) {}
 
     const data = await fetchData(dataKey);
+    const dataStore = db.transaction(dataKey, 'readwrite').objectStore(dataKey);
+    IndexedDbManager.fillStoreWith(dataStore, data);
 
-    const store = db.transaction(dataKey, 'readwrite').objectStore(dataKey);
+    const metadataStore = db.transaction('metadata', 'readwrite').objectStore('metadata');
+    const addRequest = metadataStore.add(true, dataKey);
 
-    IndexedDbManager.fillStoreWith(store, data);
-
-    const versionChangeRequest = indexedDB.open('weather-statistics', Number(db.version * VERSION_FACTOR[dataKey]));
-
-    return toPromise(versionChangeRequest);
+    return toPromise(addRequest);
   }
 
-  static isDataPresent(version, dataKey) {
-    return version % VERSION_FACTOR[dataKey] === 0;
+  static isDataPresent(db, dataKey) {
+    const store = db.transaction('metadata').objectStore('metadata');
+    const checkRequest = store.get(dataKey);
+    return toPromise(checkRequest);
   }
 
   static fillStoreWith(store, data) {
@@ -92,14 +90,16 @@ class IndexedDbManager {
 function toPromise(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => throw request.error;
+    request.onerror = () => reject(request.error);
   });
 }
 
 function fetchData(dataKey) {
   return fetch(`../data/${dataKey}.json`)
     .then(data => data.json())
-    .catch(error => throw `Failed to retrieve ${dataKey}.json. Error: ${error}`);
+    .catch(error => {
+      throw new Error(`Failed to retrieve ${dataKey}.json. Error: ${error}`)
+    });
 }
 
 function getMonth(item) {
