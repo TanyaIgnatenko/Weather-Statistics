@@ -69,10 +69,16 @@ class App {
   }
 
   initChart(chartCanvas) {
-    const { selectedDataType } = this.state;
+    this.chart = new Chart(
+      chartCanvas,
+      true,
+      value => value + this.getSelectedDataTypeUnits(),
+    );
+  }
 
-    const dataUnits =  unitsByType[selectedDataType];
-    this.chart = new Chart(chartCanvas, true, value => value + dataUnits);
+  getSelectedDataTypeUnits() {
+    const { selectedDataType } = this.state;
+    return unitsByType[selectedDataType];
   }
 
   initRangeSlider(slider) {
@@ -130,12 +136,8 @@ class App {
 
     const { selectedPeriod } = this.state;
 
-    const minDate = selectName === 'end'
-      ? selectedPeriod.start
-      : MIN_DATE;
-    const maxDate = selectName === 'start'
-      ? selectedPeriod.end
-      : MAX_DATE;
+    const minDate = selectName === 'end' ? selectedPeriod.start : MIN_DATE;
+    const maxDate = selectName === 'start' ? selectedPeriod.end : MAX_DATE;
 
     const possibleDates = range(minDate, maxDate);
     possibleDates.forEach(year => {
@@ -148,9 +150,7 @@ class App {
   }
 
   getPeriodSelectByName(name) {
-    return name === 'start'
-      ? this.startDateSelect
-      : this.endDateSelect;
+    return name === 'start' ? this.startDateSelect : this.endDateSelect;
   }
 
   switchDataType = dataType => {
@@ -185,8 +185,14 @@ class App {
   };
 
   updateChart() {
-    const { width: selectedRangeWidth } = this.selectedRange.getBoundingClientRect();
-    const normalizedRangeLength = absoluteValueToNormalized(selectedRangeWidth, 0, this.sliderPreviewChart.width);
+    const {
+      width: selectedRangeWidth,
+    } = this.selectedRange.getBoundingClientRect();
+    const normalizedRangeLength = absoluteValueToNormalized(
+      selectedRangeWidth,
+      0,
+      this.sliderPreviewChart.width,
+    );
 
     const { selectedDataType, selectedPeriod } = this.state;
     this.worker.postMessage({
