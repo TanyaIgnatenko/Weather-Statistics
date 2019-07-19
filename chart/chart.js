@@ -11,40 +11,40 @@ const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
 const TOOLTIP_RADIUS = 10;
 const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
-const TOOLTIP_TEXT_OFFSET_LEFT = 38;
-const TOOLTIP_FONT_SIZE = 16;
 
 const defaultChartStyle = {
-  strokeStyle: 'dimgray',
-  lineJoin: 'round',
-  lineCap: 'round',
   lineWidth: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+  strokeStyle: 'dimgray',
 };
 
 const defaultTooltipBoxStyle = {
   fillStyle: 'white',
   lineWidth: 0.25,
-  strokeStyle: 'rgba(0,0,0,0.3)',
   shadowOffsetX: 1,
   shadowOffsetY: 2,
   shadowBlur: 6,
+  strokeStyle: 'rgba(0,0,0,0.3)',
   shadowColor: 'rgba(0,0,0,0.08)',
 };
 
 const defaultTooltipTextStyle = {
   fillStyle: 'black',
-  font: `${TOOLTIP_FONT_SIZE}px Roboto`,
+  font: '16px Roboto',
+  textAlign: 'center',
+  textBaseline: 'middle',
 };
 
 const defaultTooltipLineStyle = {
-  strokeStyle: 'rgba(0,0,0,0.12)',
   lineWidth: 1,
+  strokeStyle: 'rgba(0,0,0,0.12)',
 };
 
 const defaultHighlightingPointStyle = {
+  lineWidth: 3,
   fillStyle: 'white',
   strokeStyle: '#717171',
-  lineWidth: 3,
 };
 
 class Chart {
@@ -234,8 +234,8 @@ class Chart {
     this.applyStyles(this.styles.tooltipText);
     this.context.fillText(
       text,
-      tooltipLeft + TOOLTIP_TEXT_OFFSET_LEFT,
-      tooltipTop + TOOLTIP_HEIGHT / 2 + TOOLTIP_FONT_SIZE / 2,
+      tooltipLeft + TOOLTIP_WIDTH / 2,
+      tooltipTop + TOOLTIP_HEIGHT / 2 + 3,
     );
     this.context.restore();
   }
