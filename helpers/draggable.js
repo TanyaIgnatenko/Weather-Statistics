@@ -1,19 +1,20 @@
 function makeDraggable({
-                         node: draggable,
-                         onDragStart = () => {},
-                         onDrag = () => {},
-                         onDragEnd = () => {},
-                       }
-) {
-  draggable.addEventListener('pointerdown', grab);
-
+  node: draggable,
+  onDragStart = () => {},
+  onDrag = () => {},
+  onDragEnd = () => {},
+}) {
   let cursorShift = null;
+  draggable.style.cursor = 'grab';
+  draggable.addEventListener('pointerdown', grab);
 
   function grab(event) {
     const { target: draggedObject, pageX: cursorX } = event;
 
     const draggedObjectLeft = draggedObject.getBoundingClientRect().left;
     cursorShift = cursorX - draggedObjectLeft;
+
+    draggedObject.style.cursor = 'grabbing';
 
     document.addEventListener('pointermove', move);
     document.addEventListener('pointerup', release);
@@ -36,6 +37,10 @@ function makeDraggable({
   }
 
   function release(event) {
+    const { target: draggedObject } = event;
+
+    draggedObject.style.cursor = 'grab';
+
     document.removeEventListener('pointermove', move);
     document.removeEventListener('pointerup', release);
 
