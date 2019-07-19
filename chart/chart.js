@@ -84,14 +84,18 @@ class Chart {
     this.canvasWidth = canvasRect.width;
     this.canvasHeight = canvasRect.height;
 
-    this.chartLeft = CHART_OFFSET_X;
-    this.chartRight = canvasRect.width - CHART_OFFSET_X;
+    this.chartLeft = 0;
+    this.chartRight = canvasRect.width;
     this.chartTop = CHART_OFFSET_Y;
     this.chartBottom = canvasRect.height - CHART_OFFSET_Y;
   }
 
   prepareToShowTooltip() {
     this.chartTop += TOOLTIP_ZONE_HEIGHT;
+
+    // to avoid highlighting points clipping on hover
+    this.chartLeft += CHART_OFFSET_X;
+    this.chartRight -= CHART_OFFSET_X;
 
     this.tooltipCenterXLimit = {
       left: this.chartLeft + TOOLTIP_WIDTH / 2,
