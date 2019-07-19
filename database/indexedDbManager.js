@@ -1,4 +1,8 @@
 class IndexedDbManager {
+  constructor() {
+    this.fetchPutPromise = {};
+  }
+
   openDb() {
     if (this.db) return this.db;
 
@@ -69,11 +73,11 @@ class IndexedDbManager {
       return;
     }
 
-    if (!this.fetchPutPromise) {
-      this.fetchPutPromise = IndexedDbManager.fetchAndPut(db, dataKey);
+    if (!this.fetchPutPromise[dataKey]) {
+      this.fetchPutPromise[dataKey] = IndexedDbManager.fetchAndPut(db, dataKey);
     }
 
-    return this.fetchPutPromise;
+    return this.fetchPutPromise[dataKey];
   }
 
   static isDataPresent(db, dataKey) {
