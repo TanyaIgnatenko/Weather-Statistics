@@ -51,6 +51,7 @@ body {
 
 .temperature-input + span, .precipitation-input + span {
     content: "";
+    z-index: -1;
     position: absolute;
     left: 0;
     top: 0;
@@ -72,8 +73,6 @@ body {
 }
 
 .temperature-input:checked + span, .precipitation-input:checked + span {
-    z-index: -1;
-
     background: white;
 }
 

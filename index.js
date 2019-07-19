@@ -1,10 +1,23 @@
 import { App } from './app.js';
+import { bindLabelEnterPressWithRelatedInput } from './helpers/dom.js';
 
 const chartCanvas = document.getElementsByClassName('chart')[0];
+
+const dataTypeLabels = {
+  temperature: document.getElementsByClassName('data-type-label')[0],
+  precipitation: document.getElementsByClassName('data-type-label')[1],
+};
+
+Object.values(dataTypeLabels).forEach(dataTypeLabel => {
+  bindLabelEnterPressWithRelatedInput(dataTypeLabel);
+});
+
 const dataTypeInputs = {
   temperature: document.getElementsByClassName('temperature-input')[0],
   precipitation: document.getElementsByClassName('precipitation-input')[0],
 };
+
+
 const periodSelects = {
   start: document.getElementsByClassName('start-date')[0],
   end: document.getElementsByClassName('end-date')[0],

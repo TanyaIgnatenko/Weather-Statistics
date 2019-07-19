@@ -1,7 +1,7 @@
 import { invert, fromOneSystemToAnother } from '../helpers/systemConversion.js';
 import { binaryFindIndex } from '../helpers/binaryFindIndex.js';
-import { clamp } from '../helpers/clamp.js';
 import { roundRect } from '../helpers/canvas.js';
+import { clamp } from '../helpers/clamp.js';
 
 const CHART_OFFSET_X = 10;
 const CHART_OFFSET_Y = 10;

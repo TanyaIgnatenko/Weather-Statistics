@@ -4,4 +4,13 @@ function removeAllChilds(node) {
   }
 }
 
-export { removeAllChilds };
+function bindLabelEnterPressWithRelatedInput(label) {
+  const relatedInput = document.getElementById(label.htmlFor);
+  label.addEventListener('keyup', event => {
+    if(event.code === 'Enter' ) {
+      relatedInput.click();
+    }
+  });
+}
+
+export { removeAllChilds, bindLabelEnterPressWithRelatedInput };
