@@ -1,5 +1,5 @@
 function removeAllChilds(node) {
-  while(node.firstChild) {
+  while (node.firstChild) {
     node.removeChild(node.firstChild);
   }
 }

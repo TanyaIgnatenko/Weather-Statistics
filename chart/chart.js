@@ -10,7 +10,6 @@ const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
 const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
 const TOOLTIP_TEXT_OFFSET_LEFT = 38;
-const TOOLTIP_TEXT_OFFSET_TOP = 5;
 
 const defaultChartStyle = {
   strokeStyle: 'dimgray',
@@ -103,7 +102,10 @@ class Chart {
     };
 
     this.canvas.addEventListener('mousemove', this.showPlaceholder.bind(this));
-    this.canvas.addEventListener('mouseleave', this.removePlaceholder.bind(this));
+    this.canvas.addEventListener(
+      'mouseleave',
+      this.removePlaceholder.bind(this),
+    );
   }
 
   showPlaceholder(event) {
@@ -271,7 +273,7 @@ class Chart {
     canvasPoint.y = invert(canvasPoint.y, this.chartTop, this.chartBottom);
 
     return canvasPoint;
-  };
+  }
 
   clientPointToCanvasPoint(point) {
     return {

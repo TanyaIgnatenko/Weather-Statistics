@@ -4,7 +4,7 @@ function throttle(func, ms) {
   let savedArgs = null;
 
   return function funcWrapper() {
-    if(shouldWait) {
+    if (shouldWait) {
       savedThis = this;
       savedArgs = arguments;
       return;
@@ -17,12 +17,12 @@ function throttle(func, ms) {
     setTimeout(() => {
       shouldWait = false;
 
-      if(savedThis) {
+      if (savedThis) {
         funcWrapper.apply(savedThis, savedArgs);
         savedThis = savedArgs = null;
       }
-    }, ms)
-  }
+    }, ms);
+  };
 }
 
 export { throttle };

@@ -25,7 +25,13 @@ const PURPOSE = {
 };
 
 class App {
-  constructor(chartCanvas, dataTypeInputs, periodSelects, slider, errorContainer) {
+  constructor(
+    chartCanvas,
+    dataTypeInputs,
+    periodSelects,
+    slider,
+    errorContainer,
+  ) {
     this.state = {
       selectedDataType: DATA_TYPE.TEMPERATURE,
       selectedPeriod: {
@@ -75,7 +81,7 @@ class App {
       this.chartCanvas.classList.add('hidden');
       this.sliderContainer.classList.add('hidden');
       this.errorContainer.classList.remove('hidden');
-    }
+    };
   }
 
   initChart(chartCanvas) {

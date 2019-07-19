@@ -10,17 +10,17 @@ function absoluteRangeToNormalized(absoluteRange, min, max) {
   return {
     start: absoluteValueToNormalized(absoluteRange.start, min, max),
     end: absoluteValueToNormalized(absoluteRange.end, min, max),
-  }
+  };
 }
 
 function normalizedRangeToAbsolute(absoluteRange, min, max) {
   return {
     start: normalizedValueToAbsolute(absoluteRange.start, min, max),
     end: normalizedValueToAbsolute(absoluteRange.end, min, max),
-  }
+  };
 }
 
-function fromOneSystemToAnother({value, oldMin, oldMax, newMin, newMax}) {
+function fromOneSystemToAnother({ value, oldMin, oldMax, newMin, newMax }) {
   const normalizedValue = absoluteValueToNormalized(value, oldMin, oldMax);
   return normalizedValueToAbsolute(normalizedValue, newMin, newMax);
 }
@@ -36,4 +36,4 @@ export {
   normalizedRangeToAbsolute,
   fromOneSystemToAnother,
   invert,
-}
+};

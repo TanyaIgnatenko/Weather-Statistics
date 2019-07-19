@@ -69,7 +69,7 @@ class IndexedDbManager {
   }
 
   async ensureDataPresent(db, dataKey) {
-    if ((await IndexedDbManager.isDataPresent(db, dataKey))) return;
+    if (await IndexedDbManager.isDataPresent(db, dataKey)) return;
 
     if (!this.fetchPutPromise[dataKey]) {
       this.fetchPutPromise[dataKey] = IndexedDbManager.fetchAndPut(db, dataKey);
