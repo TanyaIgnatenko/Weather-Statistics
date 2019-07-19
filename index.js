@@ -1,6 +1,6 @@
 import { App } from './app.js';
 
-const chartCanvas = document.getElementById('chart');
+const chartCanvas = document.getElementsByClassName('chart')[0];
 const dataTypeInputs = {
   temperature: document.getElementsByClassName('temperature-input')[0],
   precipitation: document.getElementsByClassName('precipitation-input')[0],

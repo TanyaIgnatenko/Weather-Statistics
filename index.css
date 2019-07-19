@@ -1,7 +1,9 @@
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+
+    font-size: 62.5%;
 }
 
 body {
@@ -11,27 +13,30 @@ body {
 .chart-container {
     display: flex;
     flex-direction: column;
-    width: 980px;
-    padding: 40px;
+    width: 900px;
+    height:580px;
+    margin: 40px;
 }
 
-#chart {
-    width: 900px;
+.chart {
+    width: 100%;
     height: 430px;
-    background: white;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+
+    background: white;
 }
 
 .chart-title {
     color: #414141;
-    font-size: 20px;
+    font-size: 2rem;
 }
 
 .chart-header {
     display: flex;
     justify-content: space-between;
-    width: 900px;
+    align-items: center;
+    width: 100%;
     padding: 15px 30px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -49,9 +54,9 @@ body {
     position: absolute;
     left: 0;
     top: 0;
+
     width: 100%;
     height: 100%;
-
 
     background: rgba(253, 253, 253, 0.53);
 }
@@ -67,16 +72,20 @@ body {
 }
 
 .temperature-input:checked + span, .precipitation-input:checked + span {
-    background: white;
     z-index: -1;
+
+    background: white;
 }
 
 .data-type-label {
     position: relative;
+
     padding: 8px;
+
+    font-size: 1.6rem;
     line-height: 2;
-    opacity: 0.7;
     cursor: pointer;
+    opacity: 0.7;
 }
 
 .period {
@@ -88,19 +97,26 @@ body {
     width: 100px;
     height: 30px;
     border-radius: 2px;
+
+    font-size: 1.3rem;
 }
 
 .start-date {
     margin-right: 5px;
 }
 
+.date-option {
+    font-size: 1.3rem;
+}
+
 .slider-container {
     position: relative;
+
     display: flex;
     margin-top: 20px;
 }
 
-.slider-handle, .mask, .slider-wireframe {
+.slider-handle, .mask, .slider-canvas {
     height: 56px;
 }
 
@@ -111,7 +127,9 @@ body {
 .slider-handle {
     z-index: 1;
     position: absolute;
+
     width: 16px;
+
     background: #C0D1E1;
     touch-action: none;
 }
@@ -123,12 +141,14 @@ body {
 .slider-handle:before {
     content: '';
     position: absolute;
-    background: #FFFFFF;
+    top: 50%;
+    left: 50%;
+
     width: 2px;
     height: 16px;
     border-radius: 4px;
-    top: 50%;
-    left: 50%;
+
+    background: #FFFFFF;
     transform: translate(-50%, -50%);;
 }
 
@@ -144,20 +164,27 @@ body {
 
 .selected-range {
     position: absolute;
+
     width: 900px;
     border: 2px solid #C0D1E1;
+
     touch-action: none;
 }
 
 .slider-canvas {
-    background: white;
+    width: 100%;
+    height: 60px;
     border-radius: 6px;
+
+    background: white;
 }
 
 .mask {
     position: absolute;
-    background: rgba(226, 238, 249, 0.6);
+
     width: 10px;
+
+    background: rgba(226, 238, 249, 0.6);
 }
 
 .error-container {
@@ -165,7 +192,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 430px;
-    font-size: 18px;
+
+    font-size: 1.8rem;
 }
 
 .hidden {

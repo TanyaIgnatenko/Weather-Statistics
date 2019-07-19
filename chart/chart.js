@@ -1,6 +1,7 @@
 import { invert, fromOneSystemToAnother } from '../helpers/systemConversion.js';
 import { binaryFindIndex } from '../helpers/binaryFindIndex.js';
 import { clamp } from '../helpers/clamp.js';
+import { roundRect } from '../helpers/canvas.js';
 
 const CHART_OFFSET_X = 10;
 const CHART_OFFSET_Y = 10;
@@ -8,8 +9,10 @@ const CHART_OFFSET_Y = 10;
 const TOOLTIP_ZONE_HEIGHT = 100;
 const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
+const TOOLTIP_RADIUS = 10;
 const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
 const TOOLTIP_TEXT_OFFSET_LEFT = 38;
+const TOOLTIP_FONT_SIZE = 16;
 
 const defaultChartStyle = {
   strokeStyle: 'dimgray',
@@ -20,23 +23,28 @@ const defaultChartStyle = {
 
 const defaultTooltipBoxStyle = {
   fillStyle: 'white',
-  strokeStyle: 'gray',
+  lineWidth: 0.25,
+  strokeStyle: 'rgba(0,0,0,0.3)',
+  shadowOffsetX: 1,
+  shadowOffsetY: 2,
+  shadowBlur: 6,
+  shadowColor: 'rgba(0,0,0,0.08)',
 };
 
 const defaultTooltipTextStyle = {
   fillStyle: 'black',
-  font: '16px Roboto',
+  font: `${TOOLTIP_FONT_SIZE}px Roboto`,
 };
 
 const defaultTooltipLineStyle = {
-  strokeStyle: '#E7EAEB',
+  strokeStyle: 'rgba(0,0,0,0.12)',
   lineWidth: 1,
 };
 
 const defaultHighlightingPointStyle = {
   fillStyle: 'white',
-  strokeStyle: '#B48DF7',
-  lineWidth: 4,
+  strokeStyle: '#717171',
+  lineWidth: 3,
 };
 
 class Chart {
@@ -78,6 +86,11 @@ class Chart {
 
   measureElementsSize() {
     const canvasRect = this.canvas.getBoundingClientRect();
+
+    // to avoid canvas styles and attributes desynchronization
+    this.canvas.width = canvasRect.width;
+    this.canvas.height = canvasRect.height;
+
     this.canvasLeft = canvasRect.left;
     this.canvasTop = canvasRect.top;
     this.canvasWidth = canvasRect.width;
@@ -175,21 +188,27 @@ class Chart {
   }
 
   highlightPoint(point) {
+    this.context.save();
     this.applyStyles(this.styles.highlightingPoint);
 
     this.context.beginPath();
-    this.context.arc(point.x, point.y, 7, 0, 2 * Math.PI);
+    this.context.arc(point.x, point.y, 6, 0, 2 * Math.PI);
     this.context.fill();
     this.context.stroke();
+
+    this.context.restore();
   }
 
   drawTooltipLine(x) {
+    this.context.save();
     this.applyStyles(this.styles.tooltipLine);
 
     this.context.beginPath();
-    this.context.moveTo(x, TOOLTIP_TOP);
+    this.context.moveTo(x, TOOLTIP_TOP + TOOLTIP_RADIUS);
     this.context.lineTo(x, this.chartBottom);
     this.context.stroke();
+
+    this.context.restore();
   }
 
   drawTooltipBox(desiredCenterX, text) {
@@ -202,17 +221,23 @@ class Chart {
     const tooltipLeft = centerX - TOOLTIP_WIDTH / 2;
     const tooltipTop = TOOLTIP_TOP;
 
+    this.context.save();
     this.applyStyles(this.styles.tooltipBox);
-    this.context.rect(tooltipLeft, tooltipTop, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-    this.context.stroke();
-    this.context.fill();
 
+    roundRect(this.context, tooltipLeft, tooltipTop, TOOLTIP_WIDTH, TOOLTIP_HEIGHT, TOOLTIP_RADIUS);
+    this.context.fill();
+    this.context.stroke();
+
+    this.context.restore();
+
+    this.context.save();
     this.applyStyles(this.styles.tooltipText);
     this.context.fillText(
       text,
       tooltipLeft + TOOLTIP_TEXT_OFFSET_LEFT,
-      tooltipTop + TOOLTIP_HEIGHT / 2 + 8,
+      tooltipTop + TOOLTIP_HEIGHT / 2 + TOOLTIP_FONT_SIZE / 2,
     );
+    this.context.restore();
   }
 
   clear() {
@@ -227,6 +252,7 @@ class Chart {
   drawCanvasPoints() {
     const { canvasPoints } = this.state;
 
+    this.context.save();
     this.applyStyles(this.styles.chart);
 
     this.context.beginPath();
@@ -234,6 +260,8 @@ class Chart {
       this.context.lineTo(point.x, point.y);
     });
     this.context.stroke();
+
+    this.context.restore();
   }
 
   dataToCanvasPoints(data) {

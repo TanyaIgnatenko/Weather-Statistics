@@ -160,6 +160,7 @@ class App {
       option.value = year;
       option.textContent = year;
       option.selected = year === selectedPeriod[selectName];
+      option.classList.add('date-option');
       select.appendChild(option);
     });
   }
