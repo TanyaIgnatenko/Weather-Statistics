@@ -9,7 +9,6 @@ import { absoluteValueToNormalized } from './helpers/systemConversion.js';
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
 
-// this Enum doesn't use Symbol because it will be used as key at IndexedDb while Symbol is not serializable
 const DATA_TYPE = {
   TEMPERATURE: 'temperature',
   PRECIPITATION: 'precipitation',
@@ -26,15 +25,15 @@ const PURPOSE = {
 };
 
 class App {
-  state = {
-    selectedDataType: DATA_TYPE.TEMPERATURE,
-    selectedPeriod: {
-      start: MIN_DATE,
-      end: MAX_DATE,
-    },
-  };
-
   constructor(chartCanvas, dataTypeInputs, periodSelects, slider, errorContainer) {
+    this.state = {
+      selectedDataType: DATA_TYPE.TEMPERATURE,
+      selectedPeriod: {
+        start: MIN_DATE,
+        end: MAX_DATE,
+      },
+    };
+
     this.chartCanvas = chartCanvas;
     this.sliderContainer = slider.container;
     this.selectedRange = slider.selectedRange;
@@ -101,7 +100,7 @@ class App {
       max: MAX_DATE,
       selectedRange: selectedPeriod,
       valuePerStep: 1,
-      onChange: this.handleRangeSliderChange,
+      onChange: this.handleRangeSliderChange.bind(this),
     });
 
     this.sliderPreviewChart = new Chart(slider.canvas);
@@ -163,14 +162,14 @@ class App {
     return name === 'start' ? this.startDateSelect : this.endDateSelect;
   }
 
-  switchDataType = dataType => {
+  switchDataType(dataType) {
     this.state.selectedDataType = dataType;
 
     this.updateChart();
     this.updateSliderChartPreview();
-  };
+  }
 
-  handlePeriodSelectChange = (name, value) => {
+  handlePeriodSelectChange(name, value) {
     const { selectedPeriod } = this.state;
     selectedPeriod[name] = parseInt(value, 10);
 
@@ -180,9 +179,9 @@ class App {
     this.slider.setSelectedRange(selectedPeriod.start, selectedPeriod.end);
 
     this.updateChart();
-  };
+  }
 
-  handleRangeSliderChange = newRange => {
+  handleRangeSliderChange(newRange) {
     this.state.selectedPeriod = newRange;
 
     this.startDateSelect.value = this.state.selectedPeriod.start;
@@ -192,7 +191,7 @@ class App {
     this.updatePeriodSelectOptions('end');
 
     this.updateChart();
-  };
+  }
 
   updateChart() {
     const {
@@ -228,15 +227,15 @@ class App {
     });
   }
 
-  drawChart = data => {
+  drawChart(data) {
     this.chart.clear();
     this.chart.drawChartFor(data);
-  };
+  }
 
-  drawSliderPreviewChart = data => {
+  drawSliderPreviewChart(data) {
     this.sliderPreviewChart.clear();
     this.sliderPreviewChart.drawChartFor(data);
-  };
+  }
 
   run() {
     this.updateChart();

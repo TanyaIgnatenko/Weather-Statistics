@@ -41,10 +41,6 @@ const defaultHighlightingPointStyle = {
 };
 
 class Chart {
-  state = {
-    canvasPoints: [],
-  };
-
   constructor(
     canvas,
     showPlaceholder,
@@ -57,6 +53,10 @@ class Chart {
       highlightingPoint: defaultHighlightingPointStyle,
     },
   ) {
+    this.state = {
+      canvasPoints: [],
+    };
+
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     this.formatTooltipText = formatTooltipText;
@@ -102,11 +102,11 @@ class Chart {
       right: this.chartRight - TOOLTIP_WIDTH / 2,
     };
 
-    this.canvas.addEventListener('mousemove', this.showPlaceholder);
-    this.canvas.addEventListener('mouseleave', this.removePlaceholder);
+    this.canvas.addEventListener('mousemove', this.showPlaceholder.bind(this));
+    this.canvas.addEventListener('mouseleave', this.removePlaceholder.bind(this));
   }
 
-  showPlaceholder = event => {
+  showPlaceholder(event) {
     const { clientX, clientY } = event;
 
     const canvasPoint = this.clientPointToCanvasPoint({
@@ -116,7 +116,7 @@ class Chart {
     const closestChartPoint = this.findClosestChartPoint(canvasPoint);
 
     this.drawPlaceholderFor(closestChartPoint);
-  };
+  }
 
   findClosestChartPoint(canvasPoint) {
     const { canvasPoints } = this.state;
@@ -163,9 +163,9 @@ class Chart {
     this.highlightPoint(point);
   }
 
-  removePlaceholder = () => {
+  removePlaceholder() {
     this.redrawChartOnly();
-  };
+  }
 
   redrawChartOnly() {
     this.clear();
@@ -244,10 +244,10 @@ class Chart {
       max: data.reduce((max, point) => Math.max(max, point.y), -Infinity),
     };
 
-    return data.map(this.dataToCanvasPoint);
+    return data.map(this.dataToCanvasPoint.bind(this));
   }
 
-  dataToCanvasPoint = data => {
+  dataToCanvasPoint(data) {
     const canvasPoint = {
       x: Math.round(
         fromOneSystemToAnother({
