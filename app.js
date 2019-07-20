@@ -76,13 +76,25 @@ class App {
           console.error('Unknown purpose: ', purpose);
         }
       }
+
+      this.hideError();
     };
     this.worker.onerror = error => {
       error.preventDefault();
-      this.chartCanvas.classList.add('hidden');
-      this.sliderContainer.classList.add('hidden');
-      this.errorContainer.classList.remove('hidden');
+      this.showError();
     };
+  }
+
+  showError() {
+    this.chartCanvas.classList.add('hidden');
+    this.sliderContainer.classList.add('hidden');
+    this.errorContainer.classList.remove('hidden');
+  }
+
+  hideError() {
+    this.chartCanvas.classList.remove('hidden');
+    this.sliderContainer.classList.remove('hidden');
+    this.errorContainer.classList.add('hidden');
   }
 
   initChart(chartCanvas) {
