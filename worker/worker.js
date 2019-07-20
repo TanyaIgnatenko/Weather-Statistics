@@ -3,18 +3,24 @@ importScripts('../database/indexedDbManager.js', '../helpers/math.js');
 const dbManager = new IndexedDbManager();
 
 onmessage = async function(message) {
-  const { dataKey, dateRange, groupsCount, purpose } = message.data;
+  try {
+    const { dataKey, dateRange, groupsCount, purpose } = message.data;
 
-  const monthRange = {
-    min: `${dateRange.start}-01`,
-    max: `${dateRange.end}-01`,
-  };
+    const monthRange = {
+      min: `${dateRange.start}-01`,
+      max: `${dateRange.end}-01`,
+    };
 
-  const data = await dbManager.retrieveData(dataKey, monthRange);
+    const data = await dbManager.retrieveData(dataKey, monthRange);
 
-  const averageData = getGroupsAverage(data, groupsCount);
+    const averageData = getGroupsAverage(data, groupsCount);
 
-  postMessage({ data: averageData, purpose });
+    postMessage({ data: averageData, purpose });
+  } catch (error) {
+    setTimeout(() => {
+      throw error;
+    });
+  }
 };
 
 function getGroupsAverage(data, groupsCount) {

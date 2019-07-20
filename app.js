@@ -77,7 +77,8 @@ class App {
         }
       }
     };
-    this.worker.onerror = () => {
+    this.worker.onerror = error => {
+      error.preventDefault();
       this.chartCanvas.classList.add('hidden');
       this.sliderContainer.classList.add('hidden');
       this.errorContainer.classList.remove('hidden');
