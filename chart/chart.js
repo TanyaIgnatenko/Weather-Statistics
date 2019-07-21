@@ -50,7 +50,7 @@ const defaultHighlightingPointStyle = {
 class Chart {
   constructor(
     canvas,
-    showPlaceholder,
+    showTooltip = false,
     formatTooltipText = value => value,
     styles = {
       chart: defaultChartStyle,
@@ -64,16 +64,13 @@ class Chart {
       canvasPoints: [],
     };
 
+    this.styles = styles;
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     this.formatTooltipText = formatTooltipText;
-    this.styles = styles;
 
     this.measureElementsSize();
-
-    if (showPlaceholder) {
-      this.prepareToShowTooltip();
-    }
+    if (showTooltip) this.prepareToShowTooltip();
   }
 
   get width() {
@@ -114,14 +111,14 @@ class Chart {
       right: this.chartRight - TOOLTIP_WIDTH / 2,
     };
 
-    this.canvas.addEventListener('mousemove', this.showPlaceholder.bind(this));
+    this.canvas.addEventListener('mousemove', this.showTooltip.bind(this));
     this.canvas.addEventListener(
       'mouseleave',
-      this.removePlaceholder.bind(this),
+      this.removeTooltip.bind(this),
     );
   }
 
-  showPlaceholder(event) {
+  showTooltip(event) {
     const { clientX, clientY } = event;
 
     const canvasPoint = this.clientPointToCanvasPoint({
@@ -130,7 +127,7 @@ class Chart {
     });
     const closestChartPoint = this.findClosestChartPoint(canvasPoint);
 
-    this.drawPlaceholderFor(closestChartPoint);
+    this.drawTooltipFor(closestChartPoint);
   }
 
   findClosestChartPoint(canvasPoint) {
@@ -160,7 +157,7 @@ class Chart {
       : rightClosestPoint;
   }
 
-  drawPlaceholderFor(point) {
+  drawTooltipFor(point) {
     this.redrawChartOnly();
     this.drawTooltipLine(point.x);
 
@@ -178,7 +175,7 @@ class Chart {
     this.highlightPoint(point);
   }
 
-  removePlaceholder() {
+  removeTooltip() {
     this.redrawChartOnly();
   }
 

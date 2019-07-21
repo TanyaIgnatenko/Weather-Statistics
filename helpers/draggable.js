@@ -37,9 +37,7 @@ function makeDraggable({
   }
 
   function release(event) {
-    const { target: draggedObject } = event;
-
-    draggedObject.style.cursor = 'grab';
+    draggable.style.cursor = 'grab';
 
     document.removeEventListener('pointermove', move);
     document.removeEventListener('pointerup', release);

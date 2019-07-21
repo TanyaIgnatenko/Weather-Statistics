@@ -3,7 +3,7 @@ import { Chart } from './chart/chart.js';
 import { range } from './helpers/range.js';
 import { clamp } from './helpers/clamp.js';
 import { throttle } from './helpers/throttle.js';
-import { removeAllChilds } from './helpers/dom.js';
+import { createElement, removeAllChilds } from './helpers/dom.js';
 import { absoluteValueToNormalized } from './helpers/systemConversion.js';
 
 const MIN_DATE = 1881;
@@ -169,12 +169,11 @@ class App {
 
     const possibleDates = range(minDate, maxDate);
     possibleDates.forEach(year => {
-      const option = document.createElement('option');
-      option.value = year;
-      option.textContent = year;
-      option.selected = year === selectedPeriod[selectName];
-      option.classList.add('date-option');
-      select.appendChild(option);
+      createElement(select, 'option', 'date-option', {
+        value: year,
+        textContent: year,
+        selected: year === selectedPeriod[selectName],
+      });
     });
   }
 
