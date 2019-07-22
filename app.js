@@ -14,14 +14,14 @@ const DATA_TYPE = {
   PRECIPITATION: 'precipitation',
 };
 
-const unitsByType = {
-  temperature: '℃',
-  precipitation: 'мм',
-};
-
 const PURPOSE = {
   SLIDER: 'slider',
   CHART: 'chart',
+};
+
+const unitsByType = {
+  temperature: '℃',
+  precipitation: 'мм',
 };
 
 class App {
