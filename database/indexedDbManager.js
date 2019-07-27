@@ -8,7 +8,7 @@ class IndexedDbManager {
   openDb() {
     if (this.db) return this.db;
 
-    const openRequest = indexedDB.open('weather-statistics');
+    const openRequest = indexedDB.open('weather-statistics', 2);
 
     openRequest.onupgradeneeded = ({ oldVersion }) => {
       this.db = openRequest.result;
