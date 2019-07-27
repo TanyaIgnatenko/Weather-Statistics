@@ -8,11 +8,11 @@ const CHART_OFFSET_X = 10;
 const CHART_OFFSET_Y = 10;
 const CHART_BOTTOM_PADDING = 50;
 
-const TOOLTIP_ZONE_HEIGHT = 100;
+const TOOLTIP_ZONE_HEIGHT = 0;
 const TOOLTIP_HEIGHT = 60;
 const TOOLTIP_WIDTH = 120;
 const TOOLTIP_RADIUS = 10;
-const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
+const TOOLTIP_TOP = 0;
 
 const Y_LINES_COUNT = 5;
 const Y_LINE_LABEL_ZONE_WIDTH = 70;
@@ -37,7 +37,7 @@ const defaultYLineLabelStyle = {
 };
 
 const defaultTooltipBoxStyle = {
-  fillStyle: 'white',
+  fillStyle: '#FAFCFE',
   lineWidth: 0.25,
   shadowOffsetX: 1,
   shadowOffsetY: 2,
@@ -193,13 +193,13 @@ class Chart {
 
   drawTooltipFor(point) {
     this.redrawChartOnly();
+
     this.drawTooltipLine(point.x);
+    this.highlightPoint(point);
 
     const value = this.canvasYToValue(point.y);
     const tooltipText = this.formatTooltipText(value);
     this.drawTooltipBox(point.x, tooltipText);
-
-    this.highlightPoint(point);
   }
 
   removeTooltip() {

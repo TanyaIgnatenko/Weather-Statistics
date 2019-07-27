@@ -103,7 +103,7 @@ class App {
       chartCanvas,
       true,
       value => value + this.getSelectedDataTypeUnits(),
-      false,
+      true,
       value => value + this.getSelectedDataTypeUnits(),
     );
   }
