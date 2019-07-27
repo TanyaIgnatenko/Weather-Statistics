@@ -61,8 +61,8 @@ class RangeSlider {
   }
 
   measureElementsSize() {
-    const { width, left } = this.container.getBoundingClientRect();
-    this.sliderWidth = width;
+    const { left, right } = this.container.getBoundingClientRect();
+    this.sliderRight = right;
     this.sliderLeft = left;
   }
 
@@ -97,7 +97,7 @@ class RangeSlider {
     const normalizedValue = absoluteValueToNormalized(
       newPosition,
       this.sliderLeft,
-      this.sliderWidth,
+      this.sliderRight,
     );
     const endHandleValue = this.state.selectedRange.end;
     const normalizedEndHandleValue = absoluteValueToNormalized(
@@ -123,7 +123,7 @@ class RangeSlider {
     const normalizedValue = absoluteValueToNormalized(
       newPosition,
       this.sliderLeft,
-      this.sliderWidth,
+      this.sliderRight,
     );
     const startHandleValue = this.state.selectedRange.start;
     const normalizedStartHandleValue = absoluteValueToNormalized(
@@ -158,7 +158,7 @@ class RangeSlider {
     const normalizedStartValue = absoluteValueToNormalized(
       newPosition,
       this.sliderLeft,
-      this.sliderWidth,
+      this.sliderRight,
     );
     const clampedStartValue = clamp(
       normalizedStartValue,

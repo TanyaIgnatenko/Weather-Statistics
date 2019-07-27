@@ -4,27 +4,32 @@
     padding: 0;
 
     font-size: 62.5%;
+    font-family: "Open Sans", sans-serif;
 }
 
 body {
-    background: white;
+    background: #E7EDFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    padding-top: 65px;
 }
 
 .chart-container {
     display: flex;
     flex-direction: column;
-    width: 900px;
-    height:580px;
-    margin: 40px;
+    width: 779px;
+    height:461px;
+    margin-bottom: 17px;
 }
 
 .chart {
     width: 100%;
-    height: 430px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 
-    background: white;
+    background: #FAFCFE;
 }
 
 .chart-title {
@@ -37,54 +42,58 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 15px 30px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    padding-left: 20px;
+    padding-right: 65px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 
-    background: lavender;
-    font-family: "Open Sans", sans-serif;
+    background: #FAFCFE;
 }
 
 .temperature-input, .precipitation-input {
+    position: absolute;
     opacity: 0;
 }
 
-.temperature-input + span, .precipitation-input + span {
-    content: "";
-    z-index: -1;
-    position: absolute;
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    background: rgba(253, 253, 253, 0.53);
+.data-type-inputs-container {
+    display: flex;
 }
 
-.temperature-input + span {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-}
-
-.precipitation-input + span {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-
-.temperature-input:checked + span, .precipitation-input:checked + span {
-    background: white;
-}
-
-.data-type-label {
+.temperature-label, .precipitation-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
 
-    padding: 8px;
+    height: 34px;
 
-    font-size: 1.6rem;
+    font-family: "Open Sans", sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
     line-height: 2;
     cursor: pointer;
     opacity: 0.7;
+
+    background: #EFEFFB;
+}
+
+.temperature-label {
+    width: 130px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.precipitation-label {
+    width: 115px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.temperature-label.checked, .precipitation-label.checked {
+    color: white;
+    background: #A5A5E3;
 }
 
 .period {
@@ -95,9 +104,12 @@ body {
 .start-date, .end-date {
     width: 100px;
     height: 30px;
-    border-radius: 2px;
+    border-radius: 8px;
+    border: 2px solid #A5A5E3;
 
-    font-size: 1.3rem;
+    color: #414141;
+    font-size: 1.5rem;
+    cursor: pointer;
 }
 
 .start-date {
@@ -105,22 +117,19 @@ body {
 }
 
 .date-option {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
 }
 
 .slider-container {
     position: relative;
+    width: 779px;
 
     display: flex;
-    margin-top: 20px;
+    height: 70px;
 }
 
-.slider-handle, .mask, .slider-canvas {
-    height: 56px;
-}
-
-.selected-range {
-    height: 56px;
+.slider-handle, .mask, .slider-canvas, .selected-range {
+    height: 70px;
 }
 
 .slider-handle {
@@ -129,7 +138,7 @@ body {
 
     width: 16px;
 
-    background: #C0D1E1;
+    background: #A5A5E3;
     touch-action: none;
 }
 
@@ -164,15 +173,15 @@ body {
 .selected-range {
     position: absolute;
 
-    width: 900px;
-    border: 2px solid #C0D1E1;
+    width: 100%;
+    border: 2px solid #A5A5E3;
 
     touch-action: none;
 }
 
 .slider-canvas {
-    width: 100%;
-    height: 60px;
+    width: 790px;
+    height: 70px;
     border-radius: 6px;
 
     background: white;

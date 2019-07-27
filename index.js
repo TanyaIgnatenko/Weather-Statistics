@@ -4,8 +4,8 @@ import { bindLabelEnterPressWithRelatedInput } from './helpers/dom.js';
 const chartCanvas = document.getElementsByClassName('chart')[0];
 
 const dataTypeLabels = {
-  temperature: document.getElementsByClassName('data-type-label')[0],
-  precipitation: document.getElementsByClassName('data-type-label')[1],
+  temperature: document.getElementsByClassName('temperature-label')[0],
+  precipitation: document.getElementsByClassName('precipitation-label')[0],
 };
 
 Object.values(dataTypeLabels).forEach(dataTypeLabel => {

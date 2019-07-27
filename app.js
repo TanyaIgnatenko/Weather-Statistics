@@ -103,7 +103,7 @@ class App {
       chartCanvas,
       true,
       value => value + this.getSelectedDataTypeUnits(),
-      true,
+      false,
       value => value + this.getSelectedDataTypeUnits(),
     );
   }
@@ -129,19 +129,23 @@ class App {
   }
 
   initDataTypeInputs(dataTypeInputs) {
+    this.temperatureInput = dataTypeInputs.temperature;
+    this.precipitationInput = dataTypeInputs.precipitation;
+
     const { selectedDataType } = this.state;
 
-    dataTypeInputs.temperature.checked =
-      selectedDataType === DATA_TYPE.TEMPERATURE;
-    dataTypeInputs.precipitation.checked =
+    this.temperatureInput.checked = selectedDataType === DATA_TYPE.TEMPERATURE;
+    this.precipitationInput.checked =
       selectedDataType === DATA_TYPE.PRECIPITATION;
 
-    dataTypeInputs.temperature.addEventListener('click', () =>
-      this.switchDataType(DATA_TYPE.TEMPERATURE),
-    );
-    dataTypeInputs.precipitation.addEventListener('click', () =>
-      this.switchDataType(DATA_TYPE.PRECIPITATION),
-    );
+    this.updateDataTypeInputStyles();
+
+    dataTypeInputs.temperature.addEventListener('click', () => {
+      this.switchDataType(DATA_TYPE.TEMPERATURE);
+    });
+    dataTypeInputs.precipitation.addEventListener('click', () => {
+      this.switchDataType(DATA_TYPE.PRECIPITATION);
+    });
   }
 
   initPeriodSelects(periodSelects) {
@@ -187,8 +191,26 @@ class App {
   switchDataType(dataType) {
     this.state.selectedDataType = dataType;
 
+    this.updateDataTypeInputStyles();
     this.updateChart();
     this.updateSliderChartPreview();
+  }
+
+  updateDataTypeInputStyles() {
+    const { selectedDataType } = this.state;
+
+    const checkedInput =
+      selectedDataType === DATA_TYPE.TEMPERATURE
+        ? this.temperatureInput
+        : this.precipitationInput;
+
+    const uncheckedInput =
+      selectedDataType === DATA_TYPE.TEMPERATURE
+        ? this.precipitationInput
+        : this.temperatureInput;
+
+    checkedInput.parentNode.classList.add('checked');
+    uncheckedInput.parentNode.classList.remove('checked');
   }
 
   handlePeriodSelectChange(name, value) {
@@ -213,17 +235,11 @@ class App {
       1,
     );
     const startChangeRange = startBecameMore
-    ? startRange
-    : startRange.reverse();
+      ? startRange
+      : startRange.reverse();
 
-    const endRange = range(
-      this.state.selectedPeriod.end,
-      newRange.end,
-      1,
-    );
-    const endChangeRange = endBecameMore
-      ? endRange
-      : endRange.reverse();
+    const endRange = range(this.state.selectedPeriod.end, newRange.end, 1);
+    const endChangeRange = endBecameMore ? endRange : endRange.reverse();
 
     startChangeRange.forEach(newStart => {
       this.state.selectedPeriod.start = newStart;

@@ -6,6 +6,7 @@ import { range } from '../helpers/range.js';
 
 const CHART_OFFSET_X = 10;
 const CHART_OFFSET_Y = 10;
+const CHART_BOTTOM_PADDING = 50;
 
 const TOOLTIP_ZONE_HEIGHT = 100;
 const TOOLTIP_HEIGHT = 60;
@@ -17,10 +18,10 @@ const Y_LINES_COUNT = 5;
 const Y_LINE_LABEL_ZONE_WIDTH = 70;
 
 const defaultChartStyle = {
-  lineWidth: 1,
+  lineWidth: 2,
   lineCap: 'round',
   lineJoin: 'round',
-  strokeStyle: 'dimgray',
+  strokeStyle: '#58C657',
 };
 
 const defaultYLineStyle = {
@@ -60,7 +61,7 @@ const defaultTooltipLineStyle = {
 const defaultHighlightingPointStyle = {
   lineWidth: 3,
   fillStyle: 'white',
-  strokeStyle: '#717171',
+  strokeStyle: '#58C657',
 };
 
 class Chart {
@@ -92,6 +93,7 @@ class Chart {
     this.formatTooltipText = formatTooltipText;
 
     this.measureElementsSize();
+    if (showYLines) this.prepareToShowYLines();
     if (showTooltip) this.prepareToShowTooltip();
   }
 
@@ -115,10 +117,18 @@ class Chart {
     this.canvasWidth = canvasRect.width;
     this.canvasHeight = canvasRect.height;
 
-    this.chartLeft = this.showYLines ? Y_LINE_LABEL_ZONE_WIDTH : 0;
-    this.chartRight = this.showYLines ? this.canvasWidth - Y_LINE_LABEL_ZONE_WIDTH : this.canvasWidth;
+    this.chartLeft = 0;
+    this.chartRight = this.canvasWidth;
     this.chartTop = CHART_OFFSET_Y;
     this.chartBottom = canvasRect.height - CHART_OFFSET_Y;
+    this.chartHeight = this.chartBottom - this.chartTop;
+  }
+
+  prepareToShowYLines() {
+    this.chartLeft += Y_LINE_LABEL_ZONE_WIDTH;
+    this.chartRight -= Y_LINE_LABEL_ZONE_WIDTH - 5;
+    this.chartBottom -= CHART_BOTTOM_PADDING;
+    this.chartHeight -= TOOLTIP_ZONE_HEIGHT;
     this.chartHeight = this.chartBottom - this.chartTop;
   }
 

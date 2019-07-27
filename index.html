@@ -10,14 +10,16 @@
     <div class="chart-header">
         <h1 class="chart-title">Статистика</h1>
         <div class="data-type-inputs-container">
-            <label tabindex="0" for="temperature" class="data-type-label">
+            <label tabindex="0" for="temperature" class="temperature-label">
                 Температура
-                <input tabindex="-1" id="temperature" class="temperature-input" type="radio" name="data-type" value="temperature">
+                <input tabindex="-1" id="temperature" class="temperature-input" type="radio" name="data-type"
+                       value="temperature">
                 <span></span>
             </label>
-            <label tabindex="0" for="precipitation" class="data-type-label">
+            <label tabindex="0" for="precipitation" class="precipitation-label">
                 Осадки
-                <input tabindex="-1" id="precipitation" class="precipitation-input" type="radio" name="data-type" value="precipitation">
+                <input tabindex="-1" id="precipitation" class="precipitation-input" type="radio" name="data-type"
+                       value="precipitation">
                 <span></span>
             </label>
         </div>
@@ -26,17 +28,17 @@
             <select name="end" id="end" class="end-date"></select>
         </div>
     </div>
-    <canvas class="chart"></canvas>
-    <div class='slider-container'>
-        <canvas class="slider-canvas"></canvas>
-        <div class="mask left"></div>
-        <div class="mask right"></div>
-        <div class="slider-handle left"></div>
-        <div class="slider-handle right"></div>
-        <div class="selected-range"></div>
-    </div>
-    <div class="error-container hidden">Произошла ошибка</div>
+<canvas class="chart"></canvas>
 </div>
+<div class='slider-container'>
+    <canvas class="slider-canvas"></canvas>
+    <div class="mask left"></div>
+    <div class="mask right"></div>
+    <div class="slider-handle left"></div>
+    <div class="slider-handle right"></div>
+    <div class="selected-range"></div>
+</div>
+<div class="error-container hidden">Произошла ошибка</div>
 <script type="module" src="index.js"></script>
 </body>
 </html>
