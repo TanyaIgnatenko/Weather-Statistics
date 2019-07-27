@@ -2,6 +2,7 @@ import { invert, fromOneSystemToAnother } from '../helpers/systemConversion.js';
 import { binaryFindIndex } from '../helpers/binaryFindIndex.js';
 import { roundRect } from '../helpers/canvas.js';
 import { clamp } from '../helpers/clamp.js';
+import { range } from '../helpers/range.js';
 
 const CHART_OFFSET_X = 10;
 const CHART_OFFSET_Y = 10;
@@ -12,11 +13,26 @@ const TOOLTIP_WIDTH = 120;
 const TOOLTIP_RADIUS = 10;
 const TOOLTIP_TOP = CHART_OFFSET_Y + 15;
 
+const Y_LINES_COUNT = 5;
+const Y_LINE_LABEL_ZONE_WIDTH = 70;
+
 const defaultChartStyle = {
   lineWidth: 1,
   lineCap: 'round',
   lineJoin: 'round',
   strokeStyle: 'dimgray',
+};
+
+const defaultYLineStyle = {
+  lineWidth: 2,
+  strokeStyle: 'rgba(240, 240, 240)',
+};
+
+const defaultYLineLabelStyle = {
+  fillStyle: 'dimgray',
+  font: '16px Roboto',
+  textAlign: 'center',
+  textBaseline: 'middle',
 };
 
 const defaultTooltipBoxStyle = {
@@ -50,10 +66,14 @@ const defaultHighlightingPointStyle = {
 class Chart {
   constructor(
     canvas,
+    showYLines = false,
+    formatYLineLabel = value => value,
     showTooltip = false,
     formatTooltipText = value => value,
     styles = {
       chart: defaultChartStyle,
+      yLine: defaultYLineStyle,
+      yLineLabel: defaultYLineLabelStyle,
       tooltipBox: defaultTooltipBoxStyle,
       tooltipText: defaultTooltipTextStyle,
       tooltipLine: defaultTooltipLineStyle,
@@ -67,6 +87,8 @@ class Chart {
     this.styles = styles;
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
+    this.showYLines = showYLines;
+    this.formatYLineLabel = formatYLineLabel;
     this.formatTooltipText = formatTooltipText;
 
     this.measureElementsSize();
@@ -93,14 +115,16 @@ class Chart {
     this.canvasWidth = canvasRect.width;
     this.canvasHeight = canvasRect.height;
 
-    this.chartLeft = 0;
-    this.chartRight = canvasRect.width;
+    this.chartLeft = this.showYLines ? Y_LINE_LABEL_ZONE_WIDTH : 0;
+    this.chartRight = this.showYLines ? this.canvasWidth - Y_LINE_LABEL_ZONE_WIDTH : this.canvasWidth;
     this.chartTop = CHART_OFFSET_Y;
     this.chartBottom = canvasRect.height - CHART_OFFSET_Y;
+    this.chartHeight = this.chartBottom - this.chartTop;
   }
 
   prepareToShowTooltip() {
     this.chartTop += TOOLTIP_ZONE_HEIGHT;
+    this.chartHeight -= TOOLTIP_ZONE_HEIGHT;
 
     // to avoid highlighting points clipping on hover
     this.chartLeft += CHART_OFFSET_X;
@@ -161,15 +185,8 @@ class Chart {
     this.redrawChartOnly();
     this.drawTooltipLine(point.x);
 
-    const invertedY = invert(point.y, this.chartTop, this.chartBottom);
-    const valueInUserSystem = fromOneSystemToAnother({
-      value: invertedY,
-      oldMin: this.chartTop,
-      oldMax: this.chartBottom,
-      newMin: this.rangeY.min,
-      newMax: this.rangeY.max,
-    }).toFixed(1);
-    const tooltipText = this.formatTooltipText(valueInUserSystem);
+    const value = this.canvasYToValue(point.y);
+    const tooltipText = this.formatTooltipText(value);
     this.drawTooltipBox(point.x, tooltipText);
 
     this.highlightPoint(point);
@@ -181,6 +198,7 @@ class Chart {
 
   redrawChartOnly() {
     this.clear();
+    if (this.showYLines) this.drawYLines();
     this.drawCanvasPoints();
   }
 
@@ -242,8 +260,54 @@ class Chart {
   }
 
   drawChartFor(data) {
+    this.rangeX = {
+      min: data[0].x,
+      max: data[data.length - 1].x,
+    };
+    this.rangeY = {
+      min: data.reduce((min, point) => Math.min(min, point.y), Infinity),
+      max: data.reduce((max, point) => Math.max(max, point.y), -Infinity),
+    };
+
+    if (this.showYLines) this.drawYLines();
     this.state.canvasPoints = this.dataToCanvasPoints(data);
     this.drawCanvasPoints();
+  }
+
+  drawYLines() {
+    const yLines = range(0, Y_LINES_COUNT - 1);
+    const yLinesDist = this.chartHeight / (Y_LINES_COUNT - 1);
+
+    yLines.forEach(yLine => {
+      this.context.save();
+      this.applyStyles(this.styles.yLine);
+
+      const yLineStart = {
+        x: this.chartLeft,
+        y: this.chartTop + yLine * yLinesDist,
+      };
+      const yLineEnd = {
+        x: this.chartRight,
+        y: this.chartTop + yLine * yLinesDist,
+      };
+      this.context.beginPath();
+      this.context.moveTo(yLineStart.x, yLineStart.y);
+      this.context.lineTo(yLineEnd.x, yLineEnd.y);
+      this.context.stroke();
+      this.context.restore();
+
+      this.context.save();
+      this.applyStyles(this.styles.yLineLabel);
+
+      const value = this.canvasYToValue(yLineStart.y);
+      const label = this.formatYLineLabel(value);
+      this.context.fillText(
+        label,
+        yLineStart.x - Y_LINE_LABEL_ZONE_WIDTH / 2,
+        yLineStart.y,
+      );
+      this.context.restore();
+    });
   }
 
   drawCanvasPoints() {
@@ -262,15 +326,6 @@ class Chart {
   }
 
   dataToCanvasPoints(data) {
-    this.rangeX = {
-      min: data[0].x,
-      max: data[data.length - 1].x,
-    };
-    this.rangeY = {
-      min: data.reduce((min, point) => Math.min(min, point.y), Infinity),
-      max: data.reduce((max, point) => Math.max(max, point.y), -Infinity),
-    };
-
     return data.map(this.dataToCanvasPoint.bind(this));
   }
 
@@ -298,6 +353,17 @@ class Chart {
     canvasPoint.y = invert(canvasPoint.y, this.chartTop, this.chartBottom);
 
     return canvasPoint;
+  }
+
+  canvasYToValue(y) {
+    const invertedY = invert(y, this.chartTop, this.chartBottom);
+    return fromOneSystemToAnother({
+      value: invertedY,
+      oldMin: this.chartTop,
+      oldMax: this.chartBottom,
+      newMin: this.rangeY.min,
+      newMax: this.rangeY.max,
+    }).toFixed(1);
   }
 
   clientPointToCanvasPoint(point) {
