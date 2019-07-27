@@ -8,15 +8,20 @@ class IndexedDbManager {
   openDb() {
     if (this.db) return this.db;
 
-    const openRequest = indexedDB.open('weather-statistics', 2);
+    const openRequest = indexedDB.open('weather-statistics', 3);
 
     openRequest.onupgradeneeded = ({ oldVersion }) => {
       this.db = openRequest.result;
 
-      if (oldVersion < 1) {
+      if(oldVersion < 1) {
+        IndexedDbManager.createDbScheme(this.db);
+      } else if(oldVersion <= 3) {
+        this.db.deleteObjectStore('metadata');
+        this.db.deleteObjectStore('temperature');
+        this.db.deleteObjectStore('precipitation');
+
         IndexedDbManager.createDbScheme(this.db);
       }
-
       this.db.onversionchange = event => {
         this.db.close();
       };
