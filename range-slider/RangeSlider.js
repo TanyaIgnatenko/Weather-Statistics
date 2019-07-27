@@ -187,6 +187,7 @@ class RangeSlider {
       start: this.roundValue(absoluteRange.start),
       end: this.roundValue(absoluteRange.end),
     };
+
     this.onChange(roundedRange);
   }
 

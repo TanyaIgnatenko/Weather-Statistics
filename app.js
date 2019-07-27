@@ -17,6 +17,7 @@ const DATA_TYPE = {
 const PURPOSE = {
   SLIDER: 'slider',
   CHART: 'chart',
+  LOG: 'log',
 };
 
 const unitsByType = {
@@ -201,15 +202,40 @@ class App {
   }
 
   handleRangeSliderChange(newRange) {
-    this.state.selectedPeriod = newRange;
+    const startBecameMore = newRange.start >= this.state.selectedPeriod.start;
+    const endBecameMore = newRange.end >= this.state.selectedPeriod.end;
 
-    this.startDateSelect.value = this.state.selectedPeriod.start;
-    this.endDateSelect.value = this.state.selectedPeriod.end;
+    const startRange = range(
+      this.state.selectedPeriod.start,
+      newRange.start,
+      1,
+    );
+    const startChangeRange = startBecameMore
+    ? startRange
+    : startRange.reverse();
 
-    this.updatePeriodSelectOptions('start');
-    this.updatePeriodSelectOptions('end');
+    const endRange = range(
+      this.state.selectedPeriod.end,
+      newRange.end,
+      1,
+    );
+    const endChangeRange = endBecameMore
+      ? endRange
+      : endRange.reverse();
 
-    this.updateChart();
+    startChangeRange.forEach(newStart => {
+      this.state.selectedPeriod.start = newStart;
+      this.startDateSelect.value = newStart;
+      this.updatePeriodSelectOptions('start');
+      this.updateChart();
+    });
+
+    endChangeRange.forEach(newEnd => {
+      this.state.selectedPeriod.end = newEnd;
+      this.endDateSelect.value = newEnd;
+      this.updatePeriodSelectOptions('end');
+      this.updateChart();
+    });
   }
 
   updateChart() {

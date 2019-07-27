@@ -1,3 +1,5 @@
+importScripts('../helpers/math.js');
+
 class IndexedDbManager {
   constructor() {
     this.fetchPutPromise = {};
@@ -44,7 +46,7 @@ class IndexedDbManager {
       cursorRequest.onsuccess = function(event) {
         const cursor = event.target.result;
         if (cursor) {
-          data.push(...cursor.value);
+          data.push(cursor.value);
           cursor.continue();
         } else {
           resolve();
@@ -85,18 +87,24 @@ class IndexedDbManager {
   }
 
   static fillStoreWith(store, data) {
-    let curMonthStart = 0,
-      curMonth = getMonth(data[0]);
-    for (let i = 1; i < data.length; ++i) {
-      const month = getMonth(data[i]);
-      if (month !== curMonth) {
-        store.add(data.slice(curMonthStart, i), curMonth);
+    let lastYearStart = 0;
+    let lastYear = getYear(data[0]);
 
-        curMonth = month;
-        curMonthStart = i;
+    for (let i = 1; i < data.length; ++i) {
+      const year = getYear(data[i]);
+
+      if (year !== lastYear) {
+        const yearDays = data.slice(lastYearStart, i);
+        const lastYearAverage = calculateYearAverage(yearDays);
+        store.add(lastYearAverage, lastYear);
+
+        lastYear = year;
+        lastYearStart = i;
       }
     }
-    store.add(data.slice(curMonthStart, data.length), curMonth);
+    const yearDays = data.slice(lastYearStart, data.length);
+    const lastYearAverage = calculateYearAverage(yearDays);
+    store.add(lastYearAverage, lastYear);
   }
 }
 
@@ -119,8 +127,16 @@ function fetchData(dataKey) {
     });
 }
 
-function getMonth(item) {
+function getYear(item) {
   const date = new Date(item.t);
-  const [year, month] = date.toISOString().split('-');
-  return `${year}-${month}`;
+  const [year] = date.toISOString().split('-');
+  return year;
+}
+
+function calculateYearAverage(days) {
+  const unixTime = Date.parse(days[0].t);
+  return {
+    x: unixTime,
+    y: average(days.map(day => day.v)),
+  };
 }
