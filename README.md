@@ -3,7 +3,7 @@ Data visualization :bar_chart:
 
 **DEMO: https://tanyaignatenko.github.io/weather-statistics/**
 
-## Features :boom:
+## Features
  * JS-only
  * Absence of dependencies
  * Web workers API usage
@@ -11,5 +11,5 @@ Data visualization :bar_chart:
  * Tooltip display on chart point zone hover
  * Period range slider with chart overview
 
-## Screenshots :camera:
+## Screenshots
 ![App screenshots](assets/images/app.gif)
