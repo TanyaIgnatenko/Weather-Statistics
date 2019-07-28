@@ -22,6 +22,7 @@ const defaultChartStyle = {
   lineCap: 'round',
   lineJoin: 'round',
   strokeStyle: '#58C657',
+  fillStyle: 'rgba(88, 198, 87, 0.03)'
 };
 
 const defaultYLineStyle = {
@@ -331,6 +332,10 @@ class Chart {
       this.context.lineTo(point.x, point.y);
     });
     this.context.stroke();
+    this.context.lineTo(this.chartRight, this.chartBottom);
+    this.context.lineTo(this.chartLeft, this.chartBottom);
+    this.context.closePath();
+    this.context.fill();
 
     this.context.restore();
   }
