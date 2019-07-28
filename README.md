@@ -10,3 +10,6 @@ Data visualization :bar_chart:
  * IndexedDB API usage
  * Tooltip display on chart point zone hover
  * Period range slider with chart overview
+
+## Screenshots :camera:
+![App screenshots](assets/images/app.gif)
