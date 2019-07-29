@@ -177,7 +177,8 @@ body {
     position: absolute;
 
     width: 100%;
-    border: 2px solid #A5A5E3;
+    border-top: 2px solid #A5A5E3;
+    border-bottom: 2px solid #A5A5E3;
 
     touch-action: none;
 }
