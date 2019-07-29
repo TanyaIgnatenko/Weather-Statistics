@@ -22,22 +22,12 @@ body {
     z-index: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 779px;
     height:461px;
     margin-bottom: 17px;
-}
-
-.chart {
-    width: 100%;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
 
     background: #FAFCFE;
-}
-
-.chart-title {
-    color: #414141;
-    font-size: 2rem;
 }
 
 .chart-header {
@@ -46,13 +36,22 @@ body {
     align-items: center;
     width: 100%;
     padding-top: 20px;
-    padding-bottom: 40px;
     padding-left: 20px;
     padding-right: 65px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+}
 
-    background: #FAFCFE;
+.chart {
+    width: 100%;
+    height: 366px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.chart-title {
+    color: #414141;
+    font-size: 2rem;
 }
 
 .temperature-input, .precipitation-input {
