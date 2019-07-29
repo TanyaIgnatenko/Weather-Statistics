@@ -80,9 +80,15 @@ class App {
 
       this.hideError();
     };
+
+    let firstTime = true;
     this.worker.onerror = error => {
       error.preventDefault();
       this.showError();
+      if(firstTime) {
+        alert('Убедитесь, что вы находитесь не в приватном режиме, или воспользуйтесь более современным браузером');
+        firstTime = false;
+      }
     };
   }
 
