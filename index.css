@@ -19,7 +19,7 @@ body {
 }
 
 .chart-container {
-    z-index: 2;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     width: 779px;
@@ -213,7 +213,6 @@ body {
 }
 
 .cloud {
-    z-index: 1;
     position: fixed;
     width: 0;
 
@@ -246,7 +245,7 @@ body {
 
 .cloud.top-center {
     top: 14px;
-    left: 420px;
+    left: calc(50% - 221px);
 
     width: 442px;
     height: 150px;
@@ -328,10 +327,6 @@ body {
 
 
 @keyframes movement {
-    0% {
-        transform: translate(0, 0);
-    }
-
     50% {
         transform: translate(8%, 0%);
     }
