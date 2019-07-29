@@ -48,6 +48,8 @@ class RangeSlider {
       onDrag: this.handleSelectedRangeDrag.bind(this),
       onDragEnd: this.handleDragEnd.bind(this),
     });
+
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   registerDomElements(domElements) {
@@ -58,6 +60,10 @@ class RangeSlider {
     this.wireframe = domElements.wireframe;
     this.leftMask = domElements.leftMask;
     this.rightMask = domElements.rightMask;
+  }
+
+  handleResize() {
+    this.measureElementsSize();
   }
 
   measureElementsSize() {

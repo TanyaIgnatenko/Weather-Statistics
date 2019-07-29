@@ -15,7 +15,7 @@ body {
     padding-top: 65px;
 
     background: #E7EDFF;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .chart-container {
