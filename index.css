@@ -25,6 +25,7 @@ body {
     justify-content: space-between;
     width: 779px;
     height:461px;
+    border-radius: 8px;
     margin-bottom: 17px;
 
     background: #FAFCFE;
@@ -38,15 +39,11 @@ body {
     padding-top: 20px;
     padding-left: 20px;
     padding-right: 65px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
 }
 
 .chart {
     width: 100%;
     height: 366px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
 }
 
 .chart-title {
@@ -216,7 +213,7 @@ body {
     position: fixed;
     width: 0;
 
-    animation: movement 5s linear infinite;
+    animation: movement 5s ease-in-out infinite;
 }
 
 .cloud.bottom-left {
@@ -294,7 +291,7 @@ body {
 }
 
 
-.first-gleaming,.second-gleaming {
+.first-shining,.second-shining {
     position: absolute;
     top: 0;
     right: 0;
@@ -305,23 +302,29 @@ body {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.first-gleaming {
-    animation: growth 4s ease-in-out 2.5s infinite;
+.first-shining {
+    animation: shining 4.5s ease-in-out 2.5s infinite;
 }
-.second-gleaming {
-    animation: growth 4s ease-in-out 3s infinite;
+.second-shining {
+    animation: shining 4.5s ease-in-out 3s infinite;
 }
 
 
-@keyframes growth {
+@keyframes shining {
     0% {
         width: 0;
         height: 0;
+        opacity: 1;
+    }
+
+    75% {
+        width: 800px;
+        height: 800px;
+        opacity: 1;
     }
 
     100% {
-        width: 800px;
-        height: 800px;
+        opacity: 0;
     }
 }
 
