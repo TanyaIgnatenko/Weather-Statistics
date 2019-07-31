@@ -355,12 +355,16 @@ class Chart {
       this.context.lineTo(point.x, point.y);
     });
     this.context.stroke();
+    this.fillChart();
+
+    this.context.restore();
+  }
+
+  fillChart() {
     this.context.lineTo(this.chartRight, this.chartBottom);
     this.context.lineTo(this.chartLeft, this.chartBottom);
     this.context.closePath();
     this.context.fill();
-
-    this.context.restore();
   }
 
   dataToCanvasPoints(data) {
