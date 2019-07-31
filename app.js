@@ -1,10 +1,8 @@
 import { RangeSlider } from './range-slider/RangeSlider.js';
 import { Chart } from './chart/chart.js';
 import { range } from './helpers/range.js';
-import { clamp } from './helpers/clamp.js';
 import { throttle } from './helpers/throttle.js';
 import { createElement, removeAllChilds } from './helpers/dom.js';
-import { absoluteValueToNormalized } from './helpers/systemConversion.js';
 
 const MIN_DATE = 1881;
 const MAX_DATE = 2006;
@@ -263,22 +261,10 @@ class App {
   }
 
   updateChart() {
-    const {
-      width: selectedRangeWidth,
-    } = this.selectedRange.getBoundingClientRect();
-    const normalizedRangeLength = absoluteValueToNormalized(
-      selectedRangeWidth,
-      0,
-      this.sliderPreviewChart.width,
-    );
-
-    const groupsCount = clamp(50 * normalizedRangeLength, 3, 50);
-
     const { selectedDataType, selectedPeriod } = this.state;
     this.worker.postMessage({
       dataKey: selectedDataType,
       dateRange: selectedPeriod,
-      groupsCount,
       purpose: PURPOSE.CHART,
     });
   }
@@ -291,7 +277,6 @@ class App {
         start: MIN_DATE,
         end: MAX_DATE,
       },
-      groupsCount: 50,
       purpose: PURPOSE.SLIDER,
     });
   }

@@ -85,19 +85,36 @@ class Chart {
     },
   ) {
     this.state = {
-      canvasPoints: [],
+      data: null,
+      canvasPoints: null,
     };
 
     this.styles = styles;
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
     this.showYLines = showYLines;
+    this.showTooltip = showTooltip;
     this.formatYLineLabel = formatYLineLabel;
     this.formatTooltipText = formatTooltipText;
 
     this.measureElementsSize();
+
     if (showYLines) this.prepareToShowYLines();
     if (showTooltip) this.prepareToShowTooltip();
+
+    window.addEventListener('resize', this.handleResize.bind(this));
+  }
+
+  handleResize() {
+    this.measureElementsSize();
+
+    if (this.showYLines) this.prepareToShowYLines();
+    if (this.showTooltip) this.prepareToShowTooltip();
+
+    this.clear();
+
+    const { data } = this.state;
+    this.drawChartFor(data);
   }
 
   get width() {
@@ -122,6 +139,7 @@ class Chart {
 
     this.chartLeft = 0;
     this.chartRight = this.canvasWidth;
+
     this.chartTop = CHART_TOP_PADDING;
     this.chartBottom = canvasRect.height - CHART_BOTTOM_PADDING;
     this.chartHeight = this.chartBottom - this.chartTop;
@@ -148,14 +166,14 @@ class Chart {
       right: this.chartRight - TOOLTIP_WIDTH / 2,
     };
 
-    this.canvas.addEventListener('mousemove', this.showTooltip.bind(this));
+    this.canvas.addEventListener('mousemove', this.showTooltipFor.bind(this));
     this.canvas.addEventListener(
       'mouseleave',
       this.removeTooltip.bind(this),
     );
   }
 
-  showTooltip(event) {
+  showTooltipFor(event) {
     const { clientX, clientY } = event;
 
     const canvasPoint = this.clientPointToCanvasPoint({
@@ -283,7 +301,10 @@ class Chart {
     };
 
     if (this.showYLines) this.drawYLines();
+
+    this.state.data = data;
     this.state.canvasPoints = this.dataToCanvasPoints(data);
+
     this.drawCanvasPoints();
   }
 
