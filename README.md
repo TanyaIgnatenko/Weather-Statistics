@@ -1,15 +1,11 @@
-# weather-statistics
-Data visualization :bar_chart:
+# Chart with weather statistics
 
 **DEMO: https://tanyaignatenko.github.io/weather-statistics/**
 
-## Features
- * JS-only
- * Absence of dependencies
- * Web workers API usage
- * IndexedDB API usage
- * Tooltip display on chart point zone hover
- * Period range slider with chart overview
+ * Implemented a component using only JS (it was a requirement of this test task).
+ * Implemented a chart using Canvas API.
+ * Solved a problem of optimizing a calculation of average month values and a calculation chart coordinates by calculating them in WebWorker and by memoizing results in IndexedDB.
+ * Implemented a slider to select a period for the chart with preview of the whole chart.
 
 ## Screenshots
 ![App screenshots](assets/images/app.gif)
