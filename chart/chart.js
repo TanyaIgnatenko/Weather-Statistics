@@ -23,17 +23,17 @@ const defaultChartStyle = {
   lineWidth: 2,
   lineCap: 'round',
   lineJoin: 'round',
-  strokeStyle: '#58C657',
-  fillStyle: 'rgba(88, 198, 87, 0.03)'
+  strokeStyle: '#108BE3',
+  fillStyle: 'rgba(201, 217, 239, 0.2)'
 };
 
 const defaultYLineStyle = {
   lineWidth: 2,
-  strokeStyle: 'rgba(240, 240, 240)',
+  strokeStyle: '#c9d9ef',
 };
 
 const defaultYLineLabelStyle = {
-  fillStyle: 'dimgray',
+  fillStyle: '#000000',
   font: '16px Roboto',
   textAlign: 'center',
   textBaseline: 'middle',
@@ -64,7 +64,7 @@ const defaultTooltipLineStyle = {
 const defaultHighlightingPointStyle = {
   lineWidth: 3,
   fillStyle: 'white',
-  strokeStyle: '#58C657',
+  strokeStyle: '#108BE3',
 };
 
 class Chart {
