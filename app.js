@@ -20,7 +20,7 @@ const PURPOSE = {
 
 const unitsByType = {
   temperature: '℃',
-  precipitation: 'мм',
+  precipitation: 'mm',
 };
 
 class App {
