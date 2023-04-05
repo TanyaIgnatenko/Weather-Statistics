@@ -1,9 +1,9 @@
-# Chart for weather statistics 📊
+# Chart for weather statistics
 
-**DEMO: https://tanyaignatenko.github.io/weather-statistics/**
+**Demo: https://tanyaignatenko.github.io/weather-statistics/**
 
- * Implemented a component using only JS (it was a requirement of this test task).
- * Implemented a chart using Canvas API.
- * Solved a problem of optimizing a calculation of monthly averages and a calculation of chart coordinates by calculating them in WebWorker and by memoizing the results in IndexedDB.
- * Implemented a slider to select a period for the chart with preview of the whole chart.
+Technologies used: Vanilla JS, HTML, CSS, Canvas, Web Workers, IndexedDB
+
+- Built a chart with a slider with a preview of the entire chart
+- Optimized a calculation of chart coordinates using Web Workers and IndexedDB
 
