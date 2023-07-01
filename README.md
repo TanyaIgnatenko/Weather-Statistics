@@ -1,4 +1,4 @@
-# Chart for weather statistics
+# Chart with weather statistics
 
 **Demo: https://tanyaignatenko.github.io/weather-statistics/**
 
