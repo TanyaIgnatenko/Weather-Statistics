@@ -1,4 +1,5 @@
 # Chart with weather statistics
+This was a project in which there was a limitation to implement the chart without using external dependencies.
 
 **Demo: https://tanyaignatenko.github.io/weather-statistics/**
 
