@@ -1,13 +1,16 @@
 # Weather statistics
-This was a project in which there was a limitation to implement the chart without using external dependencies.
+The goal of the project was to create a chart for visualizing weather and rainfall statistics and optimize its performance.
 
 **Demo: https://tanyaignatenko.github.io/Weather-Statistics/**
 
+Features:
+- Ability to visualize weather statistics
+- Ability to visualize rainfall statistics
+- Ability to change period for statistics
+- Custom Chart component without using external dependencies
+- Efficient calculations of chart coordinates
+- Slider with the overview of the entire chart to select a specific period for the chart
+
 Technologies: Vanilla JS, HTML, CSS, Canvas, Web Workers, IndexedDB
-
-Created a chart component for visualizing weather and rainfall statistics.
-- Built a chart component which features a slider used to select a specific period from a longer period which displays a preview of the entire chart.
-- Optimized the calculations of chart coordinates by using Web Workers and IndexedDB.
-
 
 ![App demo](assets/images/demo.png)
