@@ -1,7 +1,7 @@
-# Chart with weather statistics
+# Weather statistics
 This was a project in which there was a limitation to implement the chart without using external dependencies.
 
-**Demo: https://tanyaignatenko.github.io/weather-statistics/**
+**Demo: https://tanyaignatenko.github.io/Weather-Statistics/**
 
 Technologies: Vanilla JS, HTML, CSS, Canvas, Web Workers, IndexedDB
 
