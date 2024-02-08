@@ -7,7 +7,7 @@ Features:
 - Ability to visualize weather statistics
 - Ability to visualize rainfall statistics
 - Ability to change period for statistics
-- Custom Chart component without using external dependencies
+- Implemented the Chart component using Canvas API without using external dependencies
 - Efficient calculations of chart coordinates
 - Slider with the overview of the entire chart to select a specific period for the chart
 
